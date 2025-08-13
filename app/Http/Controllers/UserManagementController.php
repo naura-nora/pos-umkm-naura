@@ -9,12 +9,23 @@ use Spatie\Permission\Models\Role;
 
 class UserManagementController extends Controller
 {
-    public function index()
-    {
-        $users = User::with('roles')->get();
-        $roles = Role::all();
-        return view('user-management.index', compact('users', 'roles'));
-    }
+    public function index(Request $request)
+{
+    $search = $request->input('search');
+    
+    $users = User::with('roles')
+        ->when($search, function($query, $search) {
+            return $query->where('name', 'like', '%'.$search.'%')
+                        ->orWhere('email', 'like', '%'.$search.'%')
+                        ->orWhereHas('roles', function($q) use ($search) {
+                            $q->where('name', 'like', '%'.$search.'%');
+                        });
+        })
+        ->orderBy('created_at', 'desc')
+        ->paginate(10);
+    
+    return view('user-management.index', compact('users'));
+}
 
     public function create()
     {
@@ -27,7 +38,7 @@ class UserManagementController extends Controller
         $request->validate([
         'name' => 'required|string|max:255',
         'email' => 'required|string|email|max:255|unique:users',
-        'password' => 'required|string|min:8|confirmed',
+        'password' => 'required|string|min:8|',
         'role' => 'sometimes|exists:roles,name' // Ubah required menjadi sometimes
     ]);
 

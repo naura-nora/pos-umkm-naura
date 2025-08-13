@@ -8,58 +8,49 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RoleMiddleware
 {
-    public function handle(Request $request, Closure $next, string ...$roles): Response
-    {
-        $user = $request->user();
+    // public function handle(Request $request, Closure $next, ...$roles): Response
+    // {
+    //     $user = $request->user();
         
-        if (!$user) {
-            return redirect()->route('login');
-        }
+    //     if (!$user) {
+    //         return redirect()->route('login');
+    //     }
 
-        $routeName = $request->route()->getName();
+    //     // Admin memiliki akses penuh
+    //     if ($user->hasRole('admin')) {
+    //         return $next($request);
+    //     }
 
-        // 1. Admin → akses penuh
-        if ($user->role === 'admin') {
+    //     // Cek role yang diizinkan
+    //     foreach ($roles as $role) {
+    //         if ($user->hasRole($role)) {
+    //             return $next($request);
+    //         }
+    //     }
+
+    //     abort(403, 'Anda tidak memiliki izin mengakses halaman ini.');
+    // }
+
+    public function handle(Request $request, Closure $next, ...$roles): Response
+{
+    if (!auth()->check()) {
+        return redirect()->route('login');
+    }
+
+    $user = auth()->user();
+    
+    // Skip untuk super admin
+    if ($user->hasRole('admin')) {
+        return $next($request);
+    }
+
+    // Cek role yang diizinkan
+    foreach ($roles as $role) {
+        if ($user->hasRole($role)) {
             return $next($request);
         }
-
-        // 2. Kasir
-        if ($user->role === 'kasir') {
-            $kasirRoutes = [
-                'dashboard',
-                'produk.index',
-                'produk.show',
-                'transaksi.index',
-                'transaksi.create',
-                'transaksi.store',
-                'transaksi.show',
-                'transaksi.edit',
-                'transaksi.update',
-            ];
-
-            if (in_array($routeName, $kasirRoutes)) {
-                return $next($request);
-            }
-
-            abort(403, 'Anda tidak memiliki izin mengakses halaman ini.');
-        }
-
-        // 3. Pelanggan
-        if ($user->role === 'pelanggan') {
-            $pelangganRoutes = [
-                'dashboard',
-                'produk.index',
-                'produk.show',
-            ];
-
-            if (in_array($routeName, $pelangganRoutes)) {
-                return $next($request);
-            }
-
-            abort(403, 'Anda tidak memiliki izin mengakses halaman ini.');
-        }
-
-        // Jika role tidak dikenali
-        abort(403, 'Anda tidak memiliki izin mengakses halaman ini.');
     }
+
+    abort(403, 'Unauthorized');
+}
 }

@@ -14,12 +14,19 @@ class KategoriController extends Controller
         $this->middleware('role:admin');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $kategori = Kategori::orderBy('created_at', 'desc')->paginate(7);
+        $search = $request->input('search');
+        
+        $kategori = Kategori::query()
+            ->when($search, function($query, $search) {
+                return $query->where('nama_kategori', 'like', '%'.$search.'%');
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(7);
+        
         return view('kategori.index', compact('kategori'));
     }
-
     public function create()
     {
         return view('kategori.create');

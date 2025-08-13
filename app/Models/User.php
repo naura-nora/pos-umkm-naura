@@ -25,6 +25,13 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected $appends = ['password_plain'];
+
+    public function getPasswordPlainAttribute()
+    {
+        return ''; // Ini hanya placeholder, kita akan set nilainya secara manual
+    }
+
     protected function casts(): array
     {
         return [

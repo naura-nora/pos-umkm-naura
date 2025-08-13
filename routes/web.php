@@ -8,53 +8,56 @@ use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\DashboardController;
 
-// Redirect root to login
-Route::redirect('/', '/login');
+// Redirect root ke login
+Route::redirect('/', '/login')->name('home');
 
 // Authentication Routes
 Route::controller(AuthController::class)->group(function () {
-    Route::get('/login', 'showLoginForm')->name('login');
-    Route::post('/login', 'login');
-    Route::get('/register', 'showRegistrationForm')->name('register');
-    Route::post('/register', 'register');
-    Route::post('/logout', 'logout')->name('logout');
+    Route::middleware('guest')->group(function () {
+        Route::get('/login', 'showLoginForm')->name('login');
+        Route::post('/login', 'login');
+        Route::get('/register', 'showRegistrationForm')->name('register');
+        Route::post('/register', 'register');
+    });
+    
+    Route::post('/logout', 'logout')
+        ->middleware('auth')
+        ->name('logout');
 });
 
 // Authenticated Routes
 Route::middleware(['auth'])->group(function () {
-    // Dashboard - accessible to all roles
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
-    // Profile - accessible to all roles
+    // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     
-    // Produk - Read only for all roles
+    // Rute untuk semua role (index dan show)
     Route::get('/produk', [ProdukController::class, 'index'])->name('produk.index');
     Route::get('/produk/{produk}', [ProdukController::class, 'show'])->name('produk.show');
     
-    // Transaksi Routes
-    Route::prefix('transaksi')->group(function () {
-        // Common routes for both roles
-        Route::get('/', [TransaksiController::class, 'index'])->name('transaksi.index');
-        Route::get('/create', [TransaksiController::class, 'create'])->name('transaksi.create');
-        Route::post('/', [TransaksiController::class, 'store'])->name('transaksi.store');
-        Route::get('/{transaksi}', [TransaksiController::class, 'show'])->name('transaksi.show');
-        
-        // Edit/Update routes with additional middleware
-        Route::middleware(['role:admin,kasir'])->group(function () {
-            Route::get('/{transaksi}/edit', [TransaksiController::class, 'edit'])->name('transaksi.edit');
-            Route::put('/{transaksi}', [TransaksiController::class, 'update'])->name('transaksi.update');
-        });
-        
-        // Delete only for admin
-        Route::delete('/{transaksi}', [TransaksiController::class, 'destroy'])
-            ->middleware('role:admin')
-            ->name('transaksi.destroy');
+    // Transaksi - CRU untuk kasir dan admin
+    Route::middleware(['role:admin,kasir'])->group(function () {
+        Route::resource('transaksi', TransaksiController::class)
+            ->except(['destroy'])
+            ->names([
+                'index' => 'transaksi.index',
+                'create' => 'transaksi.create',
+                'store' => 'transaksi.store',
+                'show' => 'transaksi.show',
+                'edit' => 'transaksi.edit',
+                'update' => 'transaksi.update'
+            ]);
     });
+    
+    // Hanya admin yang bisa hapus transaksi
+    Route::delete('/transaksi/{transaksi}', [TransaksiController::class, 'destroy'])
+        ->middleware('role:admin')
+        ->name('transaksi.destroy');
     
     // Admin-only routes
     Route::prefix('admin')->middleware(['role:admin'])->group(function () {
@@ -64,17 +67,37 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/produk/{produk}/edit', [ProdukController::class, 'edit'])->name('produk.edit');
         Route::put('/produk/{produk}', [ProdukController::class, 'update'])->name('produk.update');
         Route::delete('/produk/{produk}', [ProdukController::class, 'destroy'])->name('produk.destroy');
+
         
         // Kategori Management
-        Route::resource('kategori', KategoriController::class);
+        Route::resource('kategori', KategoriController::class)
+            ->except(['show'])
+            ->names([
+                'index' => 'kategori.index',
+                'create' => 'kategori.create',
+                'store' => 'kategori.store',
+                'edit' => 'kategori.edit',
+                'update' => 'kategori.update',
+                'destroy' => 'kategori.destroy'
+            ]);
         
         // User Management
-        Route::prefix('user-management')->group(function () {
-            Route::get('/', [UserManagementController::class, 'index'])->name('user-management.index');
-            Route::resource('users', UserManagementController::class);
+        Route::prefix('user-management')->name('user-management.')->group(function () {
+            Route::get('/', [UserManagementController::class, 'index'])->name('index');
+            Route::get('/create', [UserManagementController::class, 'create'])->name('create');
+            Route::post('/', [UserManagementController::class, 'store'])->name('store');
+            Route::get('/{user}/edit', [UserManagementController::class, 'edit'])->name('edit');
+            Route::put('/{user}', [UserManagementController::class, 'update'])->name('update');
+            Route::delete('/{user}', [UserManagementController::class, 'destroy'])->name('destroy');
         });
         
         // Activity Log
         Route::get('/aktivitas', [ActivityLogController::class, 'index'])->name('aktivitas.index');
     });
+});
+
+// Fallback Route untuk handle 404
+Route::fallback(function () {
+    return redirect()->route(auth()->check() ? 'dashboard' : 'login')
+           ->with('error', 'Halaman tidak ditemukan');
 });

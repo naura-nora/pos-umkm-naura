@@ -7,7 +7,7 @@
             <h3 class="card-title">Edit Akun</h3>
         </div>
         <div class="card-body">
-            <form action="{{ route('users.update', $user->id) }}" method="POST">
+            <form action="{{ route('user-management.update', $user->id) }}" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="form-group">
@@ -56,7 +56,7 @@
                     @enderror
                 </div>
                 <button type="submit" class="btn btn-primary">Update</button>
-                <a href="{{ route('users.index') }}" class="btn btn-default">Batal</a>
+                <a href="{{ route('user-management.index') }}" class="btn btn-default">Batal</a>
             </form>
         </div>
     </div>

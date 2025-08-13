@@ -40,7 +40,8 @@ class TransaksiController extends Controller
             });
         }
         
-        $transaksi = $query->latest()->paginate(10);
+        
+        $transaksi = $query->latest()->paginate(5);
         
         return view('transaksi.index', compact('transaksi', 'isAdmin'));
     }

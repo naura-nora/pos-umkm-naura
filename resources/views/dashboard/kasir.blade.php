@@ -4,10 +4,36 @@
 <div class="container">
     <h1>Dashboard Kasir</h1>
     <p>Selamat datang, {{ auth()->user()->name }}!</p>
-    <ul>
-        <li><a href="{{ route('transaksi.create') }}">Buat Transaksi Baru</a></li>
-        <li><a href="{{ route('transaksi.index') }}">Riwayat Transaksi</a></li>
-        <li><a href="{{ route('produk.index') }}">Lihat Produk</a></li>
-    </ul>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Transaksi Baru</h5>
+                    <a href="{{ route('transaksi.create') }}" class="btn btn-primary">Buat Transaksi</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Riwayat Transaksi</h5>
+                    <a href="{{ route('transaksi.index') }}" class="btn btn-primary">Lihat Riwayat</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Daftar Produk</h5>
+                    <a href="{{ route('produk.index') }}" class="btn btn-primary">Lihat Produk</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection

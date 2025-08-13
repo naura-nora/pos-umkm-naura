@@ -12,14 +12,23 @@ class ProdukController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
 {
-    $produks = Produk::with('kategori')->paginate(10);
-    $isPelanggan = auth()->user()->hasRole('pelanggan');
+    $search = $request->input('search');
     
-    return view('produk.index', compact('produks', 'isPelanggan'));
+    $produks = Produk::with('kategori')
+        ->when($search, function($query, $search) {
+            return $query->where('nama_produk', 'like', '%'.$search.'%')
+                        ->orWhere('harga_produk', 'like', '%'.$search.'%')
+                        ->orWhereHas('kategori', function($q) use ($search) {
+                            $q->where('nama_kategori', 'like', '%'.$search.'%');
+                        });
+        })
+        ->orderBy('created_at', 'desc')
+        ->paginate(5);
+    
+    return view('produk.index', compact('produks'));
 }
-
     /**
      * Show the form for creating a new product.
      */

@@ -7,7 +7,7 @@
             <h3 class="card-title">Tambah Akun Baru</h3>
         </div>
         <div class="card-body">
-            <form action="{{ route('users.store') }}" method="POST">
+            <form action="{{ route('user-management.store') }}" method="POST">
                 @csrf
                 <div class="form-group">
                     <label for="name">Nama</label>
@@ -52,7 +52,7 @@
                     @enderror
                 </div>
                 <button type="submit" class="btn btn-primary">Simpan</button>
-                <a href="{{ route('users.index') }}" class="btn btn-default">Batal</a>
+                <a href="{{ route('user-management.index') }}" class="btn btn-default">Batal</a>
             </form>
         </div>
     </div>

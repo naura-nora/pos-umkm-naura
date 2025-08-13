@@ -42,6 +42,14 @@
                             <p>Kategori</p>
                         </a>
                     </li>
+
+                    <!-- Admin Menu -->
+                    <li class="nav-item">
+                        <a href="{{ route('laporan.index') }}" class="nav-link">
+                            <i class="nav-icon fas fa-th-list"></i>
+                            <p>Laporan Keuangan</p>
+                        </a>
+                    </li>
                     
                     <!-- Manajemen User Dropdown Menu -->
                     <li class="nav-item has-treeview">

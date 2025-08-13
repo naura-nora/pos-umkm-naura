@@ -9,9 +9,9 @@
     @endif
 
     <div class="card">
-        <div class="card-header bg-primary">
+        <div class="card-header" style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);">
             <div class="d-flex justify-content-between align-items-center">
-                <h3 class="card-title">Daftar Transaksi</h3>
+                <h3 class="card-title text-light text-bold">Daftar Transaksi</h3>
                 <div>
                     @if(auth()->user()->hasRole(['admin', 'kasir']))
                         <a href="{{ route('transaksi.create') }}" class="btn btn-light">
@@ -20,26 +20,32 @@
                     @endif
                 </div>
             </div>
-            <div class="card-tools mt-3 container-fluid">
+            <div class="mt-2 w-100">
                 <form method="GET" action="{{ route('transaksi.index') }}" id="searchForm">
                     <div class="input-group">
                         <input type="text" name="search" class="form-control" 
-                               placeholder="Cari disini" 
-                               value="{{ request('search') }}"
-                               id="searchInput">
+                            placeholder="Cari disini" 
+                            value="{{ request('search') }}"
+                            id="searchInput">
                         <div class="input-group-append">
-                            <button type="submit" class="btn btn-default">
+                            <button type="submit" class="btn btn-secondary">
                                 <i class="fas fa-search"></i>
                             </button>
+                            @if(request('search'))
+                            <a href="{{ route('transaksi.index') }}" class="btn btn-danger ml-1">
+                                <i class="fas fa-times"></i> Reset
+                            </a>
+                            @endif
                         </div>
                     </div>
                 </form>
             </div>
         </div>
+
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered table-striped text-center">
-                    <thead>
+                    <thead class="bg-secondary">
                         <tr>
                             <th>No</th>
                             <th>Pelanggan</th>
@@ -96,7 +102,7 @@
             <!-- Pagination -->
             @if($transaksi->hasPages())
             <div class="d-flex justify-content-center mt-3">
-                {{ $transaksi->links() }}
+                {{ $transaksi->onEachSide(1)->links('pagination::bootstrap-4') }}
             </div>
             @endif
         </div>
@@ -111,17 +117,22 @@
     }
     .input-group {
         width: 100%;
-        max-width: 500px;
+        max-width: 600px;
     }
     .input-group input {
         border-right: none;
     }
     .input-group-append .btn {
         border-left: none;
-        background-color: #fff;
     }
-    .pagination {
-        margin: 0;
+    .input-group-append .btn-primary {
+        background-color: #007bff;
+        color: white;
+    }
+    .input-group-append .btn-danger {
+        background-color: #dc3545;
+        color: white;
+
     }
     .page-item.active .page-link {
         background-color: #007bff;
@@ -133,16 +144,41 @@
     .table-responsive {
         min-height: 400px;
     }
-    .dataTables_info {
-        padding-top: 0.85em;
-    }
     .badge {
         font-size: 0.9em;
         padding: 0.4em 0.6em;
     }
-    /* Pastikan ada jarak antara tabel dan footer */
     .card {
         margin-bottom: 20px;
+    }
+    
+     /* Custom Pagination Kecil */
+    .pagination {
+        font-size: 12px;
+        margin: 0;
+    }
+    
+    .pagination .page-item .page-link {
+        padding: 0.25rem 0.5rem;
+        min-width: 28px;
+        text-align: center;
+        margin: 0 2px;
+        border-radius: 3px;
+    }
+    
+    .pagination .page-item.active .page-link {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+    
+    .pagination .page-link {
+        color: #007bff;
+    }
+    
+    /* Untuk tombol Previous/Next */
+    .pagination .page-item:first-child .page-link,
+    .pagination .page-item:last-child .page-link {
+        padding: 0.25rem 0.5rem;
     }
 </style>
 @endsection
@@ -151,15 +187,35 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
+    const searchForm = document.getElementById('searchForm');
     let searchTimer;
     
+    // Fungsi untuk submit form
+    function submitSearch() {
+        // Reset ke halaman pertama saat melakukan pencarian baru
+        const formData = new FormData(searchForm);
+        formData.set('page', '1');
+        
+        const params = new URLSearchParams(formData);
+        window.location.href = `${searchForm.action}?${params.toString()}`;
+    }
+    
+    // Pencarian otomatis saat mengetik
     searchInput.addEventListener('input', function() {
         clearTimeout(searchTimer);
-        searchTimer = setTimeout(function() {
-            document.getElementById('searchForm').submit();
-        }, 500);
+        searchTimer = setTimeout(submitSearch, 800);
     });
     
+    // Submit form saat tekan Enter
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            clearTimeout(searchTimer);
+            submitSearch();
+        }
+    });
+    
+    // Focus ke input jika ada pencarian sebelumnya
     if(searchInput.value) {
         searchInput.focus();
     }

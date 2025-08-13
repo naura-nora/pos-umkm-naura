@@ -70,7 +70,7 @@
                             <label for="kategori_id">Kategori <span class="text-danger">*</span></label>
                             <select class="form-control select2 @error('kategori_id') is-invalid @enderror" 
                                     id="kategori_id" name="kategori_id" required>
-                                <option value="">-- Pilih Kategori --</option>
+                                <option value="">Pilih Kategori</option>
                                 @foreach($kategori as $kat)
                                     <option value="{{ $kat->id }}" {{ old('kategori_id') == $kat->id ? 'selected' : '' }}>
                                         {{ $kat->nama_kategori }}
@@ -141,7 +141,7 @@
     $(document).ready(function() {
         // Initialize Select2
         $('.select2').select2({
-            placeholder: '-- Pilih Kategori --',
+            placeholder: 'Pilih Kategori',
             width: '100%'
         });
 

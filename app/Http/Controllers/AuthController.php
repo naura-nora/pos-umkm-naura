@@ -16,37 +16,28 @@ class AuthController extends Controller
     }
 
     public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+{
+    $credentials = $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
 
-        if (Auth::attempt($credentials, $request->remember)) {
-            $request->session()->regenerate();
-            
-            // Redirect semua user ke dashboard setelah login
-            return redirect()->intended(route('dashboard'));
-        }
-
-        // perubahan
-         if (Auth::attempt($credentials)) {
+    if (Auth::attempt($credentials, $request->remember)) {
         $request->session()->regenerate();
-        
-        // Log activity
+
         activity()
             ->causedBy(auth()->user())
             ->withProperties(['ip' => $request->ip()])
             ->log('login');
 
-        return redirect()->intended('dashboard');
+        return redirect()->route('dashboard');
     }
-        // end perubahan
 
-        return back()->withErrors([
-            'email' => 'Email atau password salah',
-        ])->onlyInput('email');
-    }
+    return back()->withErrors([
+        'email' => 'Email atau password salah',
+    ])->onlyInput('email');
+}
+
 
     public function showRegistrationForm()
     {
