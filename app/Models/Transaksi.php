@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\Activitylog\Traits\LogsActivity; // Tambahkan ini
 use Spatie\Activitylog\LogOptions;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Transaksi extends Model
 {
@@ -35,6 +36,10 @@ class Transaksi extends Model
     ];
 
 
+    public function details(): HasMany
+    {
+        return $this->hasMany(DetailTransaksi::class, 'transaksi_id');
+    }
 
     protected static function boot()
     {
