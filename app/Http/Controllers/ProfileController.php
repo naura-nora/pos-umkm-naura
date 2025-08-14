@@ -43,6 +43,21 @@ class ProfileController extends Controller
         return view('profile.change-password');
     }
 
+
+    public function updatePhoto(Request $request)
+{
+    $request->validate([
+        'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+    ]);
+
+    if ($request->hasFile('photo')) {
+        $path = $request->file('photo')->store('profile-photos', 'public');
+        auth()->user()->update(['photo' => $path]);
+    }
+
+    return back()->with('success', 'Foto profil berhasil diperbarui!');
+}
+
     public function updatePassword(Request $request)
     {
         $request->validate([

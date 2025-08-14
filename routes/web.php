@@ -40,6 +40,7 @@ Route::controller(AuthController::class)->group(function () {
         Route::put('/update', [ProfileController::class, 'update'])->name('profile.update');
         Route::get('/change-password', [ProfileController::class, 'changePassword'])->name('profile.change-password');
         Route::post('/update-password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
+        Route::post('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.update.photo');
 });
     
     // Produk - Read only untuk semua role

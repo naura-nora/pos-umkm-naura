@@ -23,7 +23,7 @@ class Kategori extends Model
     /**
      * Relasi one-to-many ke model Produk
      */
-    public function produks(): HasMany
+    public function produk(): HasMany
     {
         return $this->hasMany(Produk::class, 'kategori_id');
     }

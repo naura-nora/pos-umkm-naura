@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use App\Models\Produk;
 use App\Models\Transaksi;
 use App\Models\DetailTransaksi;
@@ -95,29 +96,32 @@ class DashboardController extends Controller
 
         
         if ($user->hasRole('pelanggan')) {
-            // Customer Dashboard Data
-            $data = [
-                'produkTerbaru' => Produk::where('stok_produk', '>', 0)
-                                  ->with('kategori')
-                                  ->orderBy('created_at', 'desc')
-                                  ->take(4)
-                                  ->get(),
-                
-                'produkPopuler' => Produk::where('stok_produk', '>', 0)
-                                  ->with('kategori')
-                                  ->orderBy('terjual', 'desc')
-                                  ->take(4)
-                                  ->get(),
-                
-                'totalProduk' => Produk::where('stok_produk', '>', 0)->count(),
-                
-                'kategoriList' => Kategori::withCount(['produk' => function($query) {
-                                      $query->where('stok_produk', '>', 0);
-                                  }])->get()
-            ];
+    // Data untuk Dashboard Pelanggan
+    $data = [
+        'produkTerbaru' => Produk::where('stok_produk', '>', 0)
+                          ->with('kategori')
+                          ->orderBy('created_at', 'desc')
+                          ->take(4)
+                          ->get(),
+        
+        'produkPopuler' => Produk::where('stok_produk', '>', 0)
+                          ->with('kategori')
+                          ->withCount(['detailTransaksi as terjual' => function($query) {
+                              $query->select(DB::raw('COALESCE(SUM(subtotal), 0)'));
+                          }])
+                          ->orderBy('terjual', 'desc')
+                          ->take(4)
+                          ->get(),
+        
+        'totalProduk' => Produk::where('stok_produk', '>', 0)->count(),
+        
+        'kategoriList' => Kategori::withCount(['produk' => function($query) {
+                              $query->where('stok_produk', '>', 0);
+                          }])->get()
+    ];
 
-            return view('dashboard.pelanggan', $data);
-        }
+    return view('dashboard.pelanggan', $data);
+}
 
         abort(403, 'Role tidak dikenali.');
     }
