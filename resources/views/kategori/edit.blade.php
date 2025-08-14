@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <div class="card">
-        <div class="card-header bg-warning">
+        <div class="card-header text-light text-bold" style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);">
             <h3 class="card-title">Edit Kategori</h3>
         </div>
         <div class="card-body">
@@ -17,6 +17,7 @@
                 </div>
                 
                 <button type="submit" class="btn btn-primary">Update</button>
+                <a href="{{ route('kategori.index') }}" class="btn btn-secondary">Batal</a>
             </form>
         </div>
     </div>

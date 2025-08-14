@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class FinancialReport extends Model
 {
+
+    protected $casts = [
+        'report_date' => 'datetime',
+    ];
+
      protected $fillable = [
         'report_date', 
         'description',
@@ -14,7 +19,10 @@ class FinancialReport extends Model
         'user_id',
         'transaksi_id',
         'source',
+        'responsible'
     ];
+
+    protected $dates = ['report_date']; // Untuk otomatis parse ke Carbon
 
     public function transaksi()
     {

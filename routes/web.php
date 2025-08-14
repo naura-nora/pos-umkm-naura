@@ -29,46 +29,52 @@ Route::controller(AuthController::class)->group(function () {
 });
 
 // Authenticated Routes
-Route::middleware(['auth'])->group(function () {
-    // Dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::middleware(['auth'])->group(function () {
+        // Dashboard
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
-    // Profile
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    // Profile Routes
+    Route::prefix('profile')->group(function () {
+        Route::get('/', [ProfileController::class, 'show'])->name('profile.show');
+        Route::get('/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/update', [ProfileController::class, 'update'])->name('profile.update');
+        Route::get('/change-password', [ProfileController::class, 'changePassword'])->name('profile.change-password');
+        Route::post('/update-password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
+});
     
-    // Rute untuk semua role (index dan show)
+    // Produk - Read only untuk semua role
     Route::get('/produk', [ProdukController::class, 'index'])->name('produk.index');
     Route::get('/produk/{produk}', [ProdukController::class, 'show'])->name('produk.show');
     
-    // Transaksi - CRU untuk kasir dan admin
-    Route::middleware(['role:admin,kasir'])->group(function () {
-        Route::resource('transaksi', TransaksiController::class)
-            ->except(['destroy'])
-            ->names([
-                'index' => 'transaksi.index',
-                'create' => 'transaksi.create',
-                'store' => 'transaksi.store',
-                'show' => 'transaksi.show',
-                'edit' => 'transaksi.edit',
-                'update' => 'transaksi.update'
-            ]);
+    // Transaksi Routes
+    Route::prefix('transaksi')->group(function () {
+        // CRU untuk kasir dan admin
+        Route::middleware(['role:admin,kasir'])->group(function () {
+            Route::get('/', [TransaksiController::class, 'index'])->name('transaksi.index');
+            Route::get('/create', [TransaksiController::class, 'create'])->name('transaksi.create');
+            Route::post('/', [TransaksiController::class, 'store'])->name('transaksi.store');
+            Route::get('/{transaksi}', [TransaksiController::class, 'show'])->name('transaksi.show');
+            Route::get('/{transaksi}/edit', [TransaksiController::class, 'edit'])->name('transaksi.edit');
+            Route::put('/{transaksi}', [TransaksiController::class, 'update'])->name('transaksi.update');
+        });
+        
+        // Hanya admin yang bisa hapus transaksi
+        Route::delete('/{transaksi}', [TransaksiController::class, 'destroy'])
+            ->middleware('role:admin')
+            ->name('transaksi.destroy');
+        Route::get('/transaksi/{id}/detail', [TransaksiController::class, 'detail'])->name('transaksi.detail');
     });
-    
-    // Hanya admin yang bisa hapus transaksi
-    Route::delete('/transaksi/{transaksi}', [TransaksiController::class, 'destroy'])
-        ->middleware('role:admin')
-        ->name('transaksi.destroy');
     
     // Admin-only routes
     Route::prefix('admin')->middleware(['role:admin'])->group(function () {
         // Produk Management
-        Route::get('/produk/create', [ProdukController::class, 'create'])->name('produk.create');
-        Route::post('/produk', [ProdukController::class, 'store'])->name('produk.store');
-        Route::get('/produk/{produk}/edit', [ProdukController::class, 'edit'])->name('produk.edit');
-        Route::put('/produk/{produk}', [ProdukController::class, 'update'])->name('produk.update');
-        Route::delete('/produk/{produk}', [ProdukController::class, 'destroy'])->name('produk.destroy');
-
+        Route::prefix('produk')->group(function () {
+            Route::get('/create', [ProdukController::class, 'create'])->name('produk.create');
+            Route::post('/', [ProdukController::class, 'store'])->name('produk.store');
+            Route::get('/{produk}/edit', [ProdukController::class, 'edit'])->name('produk.edit');
+            Route::put('/{produk}', [ProdukController::class, 'update'])->name('produk.update');
+            Route::delete('/{produk}', [ProdukController::class, 'destroy'])->name('produk.destroy');
+        });
         
         // Kategori Management
         Route::resource('kategori', KategoriController::class)
@@ -95,17 +101,19 @@ Route::middleware(['auth'])->group(function () {
         // Activity Log
         Route::get('/aktivitas', [ActivityLogController::class, 'index'])->name('aktivitas.index');
 
-        Route::resource('financial-reports', FinancialReportController::class)
-            ->except(['show'])
-            ->names([
-                'index' => 'financial-reports.index',
-                'create' => 'financial-reports.create',
-                'store' => 'financial-reports.store',
-                'edit' => 'financial-reports.edit',
-                'update' => 'financial-reports.update',
-                'destroy' => 'financial-reports.destroy'
-            ]);
-
+        // Financial Reports
+        Route::prefix('financial-reports')->name('financial-reports.')->group(function () {
+            Route::get('/', [FinancialReportController::class, 'index'])->name('index');
+            Route::get('/create', [FinancialReportController::class, 'create'])->name('create');
+            Route::post('/', [FinancialReportController::class, 'store'])->name('store');
+            Route::get('/{financial_report}/edit', [FinancialReportController::class, 'edit'])->name('edit');
+            Route::put('/{financial_report}', [FinancialReportController::class, 'update'])->name('update');
+            Route::delete('/{financial_report}', [FinancialReportController::class, 'destroy'])->name('destroy');
+            
+            // Route khusus untuk pemasukan manual
+            Route::get('/income/create', [FinancialReportController::class, 'createIncome'])->name('income.create');
+            Route::post('/income', [FinancialReportController::class, 'storeIncome'])->name('income.store');
+        });
     });
 });
 

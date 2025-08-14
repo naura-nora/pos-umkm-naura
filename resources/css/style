@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Preview Button</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            margin: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .tambah { background-color: #FFC107; color: black; }
+        .tambah:hover { background-color: #e0a800; }
+
+        .edit { background-color: #0056A6; }
+        .edit:hover { background-color: #003f7d; }
+
+        .hapus { background-color: #DC3545; }
+        .hapus:hover { background-color: #b52a36; }
+
+        .view { background-color: #6C757D; }
+        .view:hover { background-color: #565e64; }
+
+        .batal { background-color: #ADB5BD; color: black; }
+        .batal:hover { background-color: #8e959c; }
+
+        .logout { background-color: #E67E22; }
+        .logout:hover { background-color: #ca6716; }
+
+        .update { background-color: #17A2B8; }
+        .update:hover { background-color: #117a8b; }
+    </style>
+</head>
+<body>
+    <button class="tambah">Tambah / Simpan</button>
+    <button class="edit">Edit</button>
+    <button class="hapus">Hapus</button>
+    <button class="view">View</button>
+    <button class="batal">Batal</button>
+    <button class="logout">Logout</button>
+    <button class="update">Update</button>
+</body>
+</html>

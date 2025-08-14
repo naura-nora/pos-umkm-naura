@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <div class="card">
-        <div class="card-header">
+        <div class="card-header text-white text-bold" style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);">
             <h5>Tambah Laporan Keuangan</h5>
         </div>
         
@@ -36,6 +36,13 @@
                     <input type="number" name="amount" id="amount" 
                            class="form-control" min="0" step="0.01" required>
                 </div>
+
+                @if($type == 'expense')
+                <div class="form-group">
+                    <label>Penanggung Jawab</label>
+                    <input type="text" name="responsible" class="form-control" required>
+                </div>
+                @endif
                 
                 <button type="submit" class="btn btn-primary">Simpan</button>
                 <a href="{{ route('financial-reports.index') }}" class="btn btn-secondary">

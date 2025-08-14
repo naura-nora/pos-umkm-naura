@@ -9,12 +9,9 @@
 @section('content')
 <div class="container mt-4">
     <div class="card">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header text-bold text-white" style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);">
             <h3 class="card-title">Form Tambah Produk</h3>
             <div class="card-tools">
-                <a href="{{ route('produk.index') }}" class="btn btn-light btn-sm">
-                    <i class="fas fa-arrow-left mr-1"></i> Kembali
-                </a>
             </div>
         </div>
         <div class="card-body">
@@ -94,17 +91,13 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-                    <small class="form-text text-muted">Format: jpeg, png, jpg, gif (max 2MB)</small>
+                    <small class="form-text text-muted">Format: jpeg, png, jpg (max 2MB)</small>
                     <div class="mt-2" id="image-preview"></div>
                 </div>
 
-                <div class="form-group text-center">
-                    <button type="submit" class="btn btn-primary btn-lg mr-2">
-                        <i class="fas fa-save mr-1"></i> Simpan Produk
-                    </button>
-                    <button type="reset" class="btn btn-outline-secondary btn-lg">
-                        <i class="fas fa-undo mr-1"></i> Reset
-                    </button>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                <a href="{{ route('produk.index') }}" class="btn btn-secondary">Batal</a>
                 </div>
             </form>
         </div>

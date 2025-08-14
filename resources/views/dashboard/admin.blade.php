@@ -27,16 +27,16 @@
     <div class="row">
         <div class="col-xl-3 col-md-6 mb-4">
             <a href="{{ route('produk.index') }}" class="text-decoration-none">
-                <div class="card shadow h-100 py-2 stat-card" style="border-left: 4px solid #f6c23e;">
+                <div class="card shadow h-100 py-2 stat-card bg-light" style="border-left: 4px solid #f6c23e;">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-md font-weight-bold text-warning text-uppercase mb-1">
+                                <div class="h6 font-weight-bold text-warning text-uppercase mb-1">
                                     Total Produk</div>
-                                <div class="h5 mb-0 font-weight-bold text-dark">{{ $totalProduk }}</div>
+                                <div class="h3 mb-0 font-weight-bold text-dark">{{ $totalProduk }}</div>
                             </div>
                             <div class="col-auto">
-                                <i class="fas fa-boxes fa-2x text-warning"></i>
+                                <i class="fas fa-boxes fa-3x text-warning"></i>
                             </div>
                         </div>
                     </div>
@@ -46,16 +46,16 @@
 
         <div class="col-xl-3 col-md-6 mb-4">
             <a href="{{ route('transaksi.index', ['filter' => 'today']) }}" class="text-decoration-none">
-                <div class="card shadow h-100 py-2 stat-card" style="border-left: 4px solid #f6c23e;">
+                <div class="card shadow h-100 py-2 stat-card bg-white" style="border-left: 4px solid #f6c23e;">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-md font-weight-bold text-warning text-uppercase mb-1">
+                                <div class="h6 font-weight-bold text-warning text-uppercase mb-1">
                                     Transaksi Hari Ini</div>
-                                <div class="h5 mb-0 font-weight-bold text-dark">{{ $transaksiHariIni }}</div>
+                                <div class="h3 mb-0 font-weight-bold text-">{{ $transaksiHariIni }}</div>
                             </div>
                             <div class="col-auto">
-                                <i class="fas fa-receipt fa-2x text-warning"></i>
+                                <i class="fas fa-receipt fa-3x text-warning"></i>
                             </div>
                         </div>
                     </div>
@@ -69,12 +69,12 @@
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
-                        <div class="text-md font-weight-bold text-warning text-uppercase mb-1">
+                        <div class="h6 font-weight-bold text-warning text-uppercase mb-1">
                             Total Kategori</div>
-                        <div class="h5 mb-0 font-weight-bold text-dark">{{ $totalKategori }}</div>
+                        <div class="h3 mb-0 font-weight-bold text-dark">{{ $totalKategori }}</div>
                     </div>
                     <div class="col-auto">
-                        <i class="fas fa-tags fa-2x text-warning"></i>
+                        <i class="fas fa-tags fa-3x text-warning"></i>
                     </div>
                 </div>
             </div>
@@ -88,12 +88,12 @@
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
-                        <div class="text-md font-weight-bold text-warning text-uppercase mb-1">
+                        <div class="h6 font-weight-bold text-warning text-uppercase mb-1">
                             Pengguna Sistem</div>
-                        <div class="h5 mb-0 font-weight-bold text-dark">{{ $totalUser }}</div>
+                        <div class="h3 mb-0 font-weight-bold text-dark">{{ $totalUser }}</div>
                     </div>
                     <div class="col-auto">
-                        <i class="fas fa-users fa-2x text-warning"></i>
+                        <i class="fas fa-users fa-3x text-warning"></i>
                     </div>
                 </div>
             </div>

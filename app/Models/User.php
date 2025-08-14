@@ -17,6 +17,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone',
+        'address',
+        'photo',
+        'role'
         // Hapus 'role' karena akan menggunakan sistem role Spatie
     ];
 

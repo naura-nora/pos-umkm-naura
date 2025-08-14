@@ -36,35 +36,40 @@ class Transaksi extends Model
 
 
 
-    protected static function booted()
-{
-    // Ketika transaksi dibuat atau diupdate
-    static::saved(function ($transaksi) {
-        if ($transaksi->status === 'Lunas') { // Ubah dari 'completed' ke 'Lunas'
-            \App\Models\FinancialReport::updateOrCreate(
-                [
-                    'transaksi_id' => $transaksi->id
-                ],
-                [
-                    'report_date' => $transaksi->tanggal,
-                    'description' => 'Transaksi #' . $transaksi->kode,
-                    'type' => 'income',
-                    'amount' => $transaksi->total,
-                    'user_id' => $transaksi->user_id,
-                    'source' => 'transaksi'
-                ]
-            );
-        } else {
-            // Jika status bukan Lunas, hapus laporan terkait
-            \App\Models\FinancialReport::where('transaksi_id', $transaksi->id)->delete();
-        }
-    });
+    protected static function boot()
+    {
+        parent::boot();
 
-    // Ketika transaksi dihapus
-    static::deleted(function ($transaksi) {
-        \App\Models\FinancialReport::where('transaksi_id', $transaksi->id)->delete();
-    });
-}
+        // Event ketika transaksi diupdate
+        static::updated(function($transaksi) {
+            if ($transaksi->isDirty('status') && $transaksi->status === 'completed') {
+                // Cek apakah sudah ada laporan untuk transaksi ini
+                $existingReport = \App\Models\FinancialReport::where('transaksi_id', $transaksi->id)->first();
+                
+                if (!$existingReport) {
+                    \App\Models\FinancialReport::create([
+                        'report_date' => $transaksi->tanggal,
+                        'description' => 'Pendapatan dari transaksi #' . $transaksi->kode,
+                        'type' => 'income',
+                        'amount' => $transaksi->total,
+                        'user_id' => $transaksi->user_id,
+                        'transaksi_id' => $transaksi->id,
+                        'source' => 'transaksi'
+                    ]);
+                }
+            }
+
+            // Jika status diubah dari completed ke lainnya
+            if ($transaksi->isDirty('status') && $transaksi->getOriginal('status') === 'completed') {
+                \App\Models\FinancialReport::where('transaksi_id', $transaksi->id)->delete();
+            }
+        });
+
+        // Event ketika transaksi dihapus
+        static::deleted(function($transaksi) {
+            \App\Models\FinancialReport::where('transaksi_id', $transaksi->id)->delete();
+        });
+    }
 
 
 

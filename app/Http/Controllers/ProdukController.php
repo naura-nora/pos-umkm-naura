@@ -54,7 +54,7 @@ class ProdukController extends Controller
             'harga_produk' => 'required|integer|min:0',
             'stok_produk' => 'required|integer|min:0',
             'kategori_id' => 'required|exists:kategori,id',
-            'gambar_produk' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'gambar_produk' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $data = $request->only(['nama_produk', 'harga_produk', 'stok_produk', 'kategori_id']);
@@ -101,7 +101,7 @@ class ProdukController extends Controller
             'harga_produk' => 'required|integer|min:0',
             'stok_produk' => 'required|integer|min:0',
             'kategori_id' => 'required|exists:kategori,id',
-            'gambar_produk' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'gambar_produk' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $data = $request->only(['nama_produk', 'harga_produk', 'stok_produk', 'kategori_id']);

@@ -12,9 +12,11 @@ return new class extends Migration
     public function up()
     {
         Schema::table('financial_reports', function (Blueprint $table) {
-            $table->foreignId('transaksi_id')->nullable()->constrained();
-            $table->string('source')->default('manual'); // 'manual' atau 'transaksi'
-        });
+        if (!Schema::hasColumn('financial_reports', 'transaksi_id')) {
+            $table->unsignedBigInteger('transaksi_id')->nullable()->after('user_id');
+            $table->foreign('transaksi_id')->references('id')->on('transaksi')->onDelete('cascade');
+        }
+    });
     }
 
     /**
@@ -23,8 +25,11 @@ return new class extends Migration
     public function down()
     {
         Schema::table('financial_reports', function (Blueprint $table) {
-            $table->dropForeign(['transaksi_id']);
-            $table->dropColumn(['transaksi_id', 'source']);
+            // Hanya hapus jika kolom ada
+            if (Schema::hasColumn('financial_reports', 'transaksi_id')) {
+                $table->dropForeign(['transaksi_id']);
+                $table->dropColumn('transaksi_id');
+            }
         });
     }
 };

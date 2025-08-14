@@ -39,6 +39,15 @@
                            value="{{ $financialReport->amount }}" required>
                 </div>
                 
+                @if($financialReport->type == 'expense')
+                <div class="form-group">
+                    <label>Penanggung Jawab</label>
+                    <input type="text" name="responsible" class="form-control" 
+                        value="{{ $financialReport->responsible }}" required>
+                </div>
+                @endif
+
+
                 <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                 <a href="{{ route('financial-reports.index') }}" class="btn btn-secondary">
                     Batal

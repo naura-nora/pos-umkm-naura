@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="card">
-                <h3 class="card-header text-bold">Edit Transaksi - {{ $transaksi->kode }}</h3>
+                <h4 class="card-header text-bold text-white" style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);">Edit Transaksi - {{ $transaksi->kode }}</h4>
 
                 <div class="card-body">
                     <form method="POST" action="{{ route('transaksi.update', $transaksi->id) }}">

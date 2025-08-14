@@ -26,10 +26,17 @@
                     </a>
                 </li>
                 
+                <li class="nav-item">
+                    <a href="{{ route('profile.show') }}" class="nav-link">
+                        <i class="nav-icon fas fa-user"></i>
+                        <p>Profile</p>
+                    </a>
+                </li>
+
                 <!-- Produk -->
                 <li class="nav-item">
                     <a href="{{ route('produk.index') }}" class="nav-link">
-                        <i class="nav-icon fas fa-box"></i>
+                        <i class="nav-icon fas fa-boxes"></i>
                         <p>Produk</p>
                     </a>
                 </li>
@@ -38,14 +45,14 @@
                     <!-- Admin Menu -->
                     <li class="nav-item">
                         <a href="{{ route('kategori.index') }}" class="nav-link">
-                            <i class="nav-icon fas fa-th-list"></i>
+                            <i class="nav-icon fas fa-tags"></i>
                             <p>Kategori</p>
                         </a>
                     </li>
 
                     <li class="nav-item">
                         <a href="{{ route('financial-reports.index') }}" class="nav-link">
-                            <i class="nav-icon fas fa-th-list"></i>
+                            <i class="nav-icon fas fa-chart-line"></i>
                             <p>Laporan Keuangan</p>
                         </a>
                     </li>
@@ -80,7 +87,7 @@
                     <!-- Transaksi Menu -->
                     <li class="nav-item">
                         <a href="{{ route('transaksi.index') }}" class="nav-link">
-                            <i class="nav-icon fas fa-cash-register"></i>
+                            <i class="nav-icon fas fa-receipt"></i>
                             <p>Transaksi</p>
                         </a>
                     </li>

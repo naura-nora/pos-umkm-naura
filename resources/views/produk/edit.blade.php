@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <div class="card">
-        <div class="card-header">
+        <div class="card-header text-light text-bold" style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);">
             <h3 class="card-title">Edit Produk</h3>
         </div>
         <div class="card-body">
@@ -52,7 +52,7 @@
                     <small class="form-text text-muted">format gambar .png/ .jpg/ .jpeg</small>
                 </div>
                 <button type="submit" class="btn btn-primary mt-3">Update</button>
-                <a href="{{ route('produk.index') }}" class="btn btn-secondary mt-3">Kembali</a>
+                <a href="{{ route('produk.index') }}" class="btn btn-secondary mt-3">Batal</a>
             </form>
         </div>
     </div>
