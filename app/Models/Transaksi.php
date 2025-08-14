@@ -34,6 +34,40 @@ class Transaksi extends Model
         'status'
     ];
 
+
+
+    protected static function booted()
+{
+    // Ketika transaksi dibuat atau diupdate
+    static::saved(function ($transaksi) {
+        if ($transaksi->status === 'Lunas') { // Ubah dari 'completed' ke 'Lunas'
+            \App\Models\FinancialReport::updateOrCreate(
+                [
+                    'transaksi_id' => $transaksi->id
+                ],
+                [
+                    'report_date' => $transaksi->tanggal,
+                    'description' => 'Transaksi #' . $transaksi->kode,
+                    'type' => 'income',
+                    'amount' => $transaksi->total,
+                    'user_id' => $transaksi->user_id,
+                    'source' => 'transaksi'
+                ]
+            );
+        } else {
+            // Jika status bukan Lunas, hapus laporan terkait
+            \App\Models\FinancialReport::where('transaksi_id', $transaksi->id)->delete();
+        }
+    });
+
+    // Ketika transaksi dihapus
+    static::deleted(function ($transaksi) {
+        \App\Models\FinancialReport::where('transaksi_id', $transaksi->id)->delete();
+    });
+}
+
+
+
     public function user()
     {
         return $this->belongsTo(User::class);

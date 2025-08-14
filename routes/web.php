@@ -9,6 +9,7 @@ use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FinancialReportController;
 
 // Redirect root ke login
 Route::redirect('/', '/login')->name('home');
@@ -93,6 +94,18 @@ Route::middleware(['auth'])->group(function () {
         
         // Activity Log
         Route::get('/aktivitas', [ActivityLogController::class, 'index'])->name('aktivitas.index');
+
+        Route::resource('financial-reports', FinancialReportController::class)
+            ->except(['show'])
+            ->names([
+                'index' => 'financial-reports.index',
+                'create' => 'financial-reports.create',
+                'store' => 'financial-reports.store',
+                'edit' => 'financial-reports.edit',
+                'update' => 'financial-reports.update',
+                'destroy' => 'financial-reports.destroy'
+            ]);
+
     });
 });
 
