@@ -104,105 +104,92 @@
 
     </div>
 
-    <!-- Grafik dan Quick Actions -->
-    <div class="row">
-        <!-- Grafik Transaksi -->
-        <div class="col-xl-8 col-lg-7">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);">
-                    <h6 class="m-0 font-weight-bold text-white">Statistik Transaksi 7 Hari Terakhir</h6>
-                </div>
-                <div class="card-body">
-                    <div class="chart-area">
-                        <canvas id="transaksiChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
+    
 
-        <!-- Quick Actions -->
-        <div class="col-xl-4 col-lg-5">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);">
-                    <h6 class="m-0 font-weight-bold text-white">Aksi Cepat</h6>
-                </div>
-                <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <a href="{{ route('produk.create') }}" class="btn btn-warning btn-icon-split mb-3" style="width:100%;">
-                            <span class="icon text-white-50">
-                                <i class="fas fa-plus"></i>
-                            </span>
-                            <span class="text">Tambah Produk Baru</span>
-                        </a>
-                        <a href="{{ route('transaksi.create') }}" class="btn btn-warning btn-icon-split mb-3" style="width:100%;">
-                            <span class="icon text-white-50">
-                                <i class="fas fa-cash-register"></i>
-                            </span>
-                            <span class="text">Buat Transaksi Baru</span>
-                        </a>
-                        <a href="{{ route('user-management.create') }}" class="btn btn-warning btn-icon-split mb-3" style="width:100%;">
-                            <span class="icon text-white-50">
-                                <i class="fas fa-user-plus"></i>
-                            </span>
-                            <span class="text">Tambah User Baru</span>
-                        </a>
-                        <a href="{{ route('kategori.create') }}" class="btn btn-warning btn-icon-split" style="width:100%;">
-                            <span class="icon text-white-50">
-                                <i class="fas fa-tag"></i>
-                            </span>
-                            <span class="text">Tambah Kategori</span>
-                        </a>
-                    </div>
+        <div class="row">
+    <!-- Produk Stok Rendah di Kiri -->
+    <div class="col-xl-8 col-lg-7">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between"
+                 style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);">
+                <h6 class="m-0 font-weight-bold text-white">Produk Dengan Stok Rendah</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="bg-secondary">
+                            <tr>
+                                <th>Nama Produk</th>
+                                <th>Kategori</th>
+                                <th>Stok Tersedia</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($stokRendah as $produk)
+                            <tr>
+                                <td>{{ $produk->nama_produk }}</td>
+                                <td>{{ $produk->kategori->nama_kategori ?? '-' }}</td>
+                                <td class="{{ $produk->stok_produk < 5 ? 'text-danger font-weight-bold' : '' }}">
+                                    {{ $produk->stok_produk }}
+                                </td>
+                                <td>
+                                    <a href="{{ route('produk.edit', $produk->id) }}" class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i> Restock
+                                    </a>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="4" class="text-center">Tidak ada produk dengan stok rendah</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Produk Stok Rendah -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);">
-                    <h6 class="m-0 font-weight-bold text-white">Produk Dengan Stok Rendah</h6>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover">
-                            <thead class="bg-secondary">
-                                <tr>
-                                    <th>Nama Produk</th>
-                                    <th>Kategori</th>
-                                    <th>Stok Tersedia</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($stokRendah as $produk)
-                                <tr>
-                                    <td>{{ $produk->nama_produk }}</td>
-                                    <td>{{ $produk->kategori->nama_kategori ?? '-' }}</td>
-                                    <td class="{{ $produk->stok_produk < 5 ? 'text-danger font-weight-bold' : '' }}">
-                                        {{ $produk->stok_produk }}
-                                    </td>
-                                    <td>
-                                        <a href="{{ route('produk.edit', $produk->id) }}" class="btn btn-sm btn-warning">
-                                            <i class="fas fa-edit"></i> Restock
-                                        </a>
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="4" class="text-center">Tidak ada produk dengan stok rendah</td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+    <!-- Aksi Cepat di Kanan -->
+    <div class="col-xl-4 col-lg-5">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between"
+                 style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);">
+                <h6 class="m-0 font-weight-bold text-white">Aksi Cepat</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ route('produk.create') }}" class="btn btn-warning btn-icon-split mb-3" style="width:100%;">
+                        <span class="icon text-white-50">
+                            <i class="fas fa-plus"></i>
+                        </span>
+                        <span class="text">Tambah Produk Baru</span>
+                    </a>
+                    <a href="{{ route('transaksi.create') }}" class="btn btn-warning btn-icon-split mb-3" style="width:100%;">
+                        <span class="icon text-white-50">
+                            <i class="fas fa-cash-register"></i>
+                        </span>
+                        <span class="text">Buat Transaksi Baru</span>
+                    </a>
+                    <a href="{{ route('user-management.create') }}" class="btn btn-warning btn-icon-split mb-3" style="width:100%;">
+                        <span class="icon text-white-50">
+                            <i class="fas fa-user-plus"></i>
+                        </span>
+                        <span class="text">Tambah User Baru</span>
+                    </a>
+                    <a href="{{ route('kategori.create') }}" class="btn btn-warning btn-icon-split" style="width:100%;">
+                        <span class="icon text-white-50">
+                            <i class="fas fa-tag"></i>
+                        </span>
+                        <span class="text">Tambah Kategori</span>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 
 @section('scripts')
 <!-- Chart.js -->

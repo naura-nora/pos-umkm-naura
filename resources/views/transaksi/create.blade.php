@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="card">
-                <h3 class="card-header text-bold">Transaksi Baru</h3>
+                <h3 class="card-header text-white text-bold" style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);">Transaksi Baru</h3>
 
                 <div class="card-body">
                     <form method="POST" action="{{ route('transaksi.store') }}">

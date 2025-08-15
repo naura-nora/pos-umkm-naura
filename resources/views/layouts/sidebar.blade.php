@@ -26,12 +26,12 @@
                     </a>
                 </li>
                 
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a href="{{ route('profile.show') }}" class="nav-link">
                         <i class="nav-icon fas fa-user"></i>
                         <p>Profile</p>
                     </a>
-                </li>
+                </li> -->
 
                 <!-- Produk -->
                 <li class="nav-item">

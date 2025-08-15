@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -22,21 +23,24 @@ class ProfileController extends Controller
     }
 
     public function update(Request $request)
-    {
-        $user = Auth::user();
+{
+    $user = auth()->user();
+    
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
+        // Remove phone and address validation if columns don't exist
+    ]);
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
-            'phone' => 'nullable|string|max:20',
-            'address' => 'nullable|string|max:255',
-        ]);
+    $user->update([
+        'name' => $request->name,
+        'email' => $request->email,
+        // Don't include phone and address in the update if columns don't exist
+    ]);
 
-        $user->update($request->all());
-
-        return redirect()->route('profile.show')
-            ->with('success', 'Profil berhasil diperbarui!');
-    }
+    return redirect()->route('profile.show')
+        ->with('success', 'Profil berhasil diperbarui!');
+}
 
     public function changePassword()
     {
@@ -51,7 +55,15 @@ class ProfileController extends Controller
     ]);
 
     if ($request->hasFile('photo')) {
+        // Hapus foto lama jika ada
+        if (auth()->user()->photo && Storage::exists('public/'.auth()->user()->photo)) {
+            Storage::delete('public/'.auth()->user()->photo);
+        }
+        
+        // Simpan foto baru
         $path = $request->file('photo')->store('profile-photos', 'public');
+        
+        // Update path foto di database
         auth()->user()->update(['photo' => $path]);
     }
 
