@@ -10,8 +10,7 @@
         </h1>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-transparent p-0">
-                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" class="text-decoration-none">Dashboard</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Profil</li>
+                <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard 1</a></li>
             </ol>
         </nav>
     </div>
@@ -48,7 +47,7 @@
                         <a href="{{ route('profile.edit') }}" class="btn btn-sm btn-primary rounded">
                             <i class="fas fa-pencil-alt mr-2"></i> Edit Profil
                         </a>
-                        <a href="{{ route('profile.change-password.show') }}" class="btn btn-sm btn-outline-secondary rounded">
+                        <a href="{{ route('profile.change-password') }}" class="btn btn-sm btn-outline-secondary rounded">
                             <i class="fas fa-lock mr-2"></i> Keamanan
                         </a>
                     </div>
@@ -106,13 +105,7 @@
                                 <p class="mb-0 fw-bold">{{ Auth::user()->phone ?: '-' }}</p>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="info-item mb-4">
-                                <label class="text-muted small mb-1">Peran</label>
-                                <p class="mb-0">
-                                    <span class="badge bg-primary">{{ Auth::user()->role }}</span>
-                                </p>
-                            </div>
+                        
                             <div class="info-item mb-4">
                                 <label class="text-muted small mb-1">Bergabung Pada</label>
                                 <p class="mb-0 fw-bold">{{ Auth::user()->created_at->format('d F Y') }}</p>

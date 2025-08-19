@@ -167,6 +167,7 @@
 </div>
 
 <script>
+    
 document.addEventListener('DOMContentLoaded', function() {
     const produkSelect = document.getElementById('produk_id');
     const kategoriInput = document.getElementById('kategori');
@@ -234,6 +235,7 @@ document.addEventListener('DOMContentLoaded', function() {
             produkList[existingProdukIndex].subtotal = produkList[existingProdukIndex].qty * hargaSatuan;
         } else {
             // Tambahkan produk baru ke list
+            
             produkList.push({
                 id: produkId,
                 nama: namaProduk,
@@ -329,6 +331,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <input type="hidden" name="produk[${index}][id]" value="${produk.id}">
                 <input type="hidden" name="produk[${index}][qty]" value="${produk.qty}">
                 <input type="hidden" name="produk[${index}][harga]" value="${produk.harga}">
+                <input type="hidden" name="produk[${index}][subtotal]" value="${produk.subtotal}">
             `;
         });
         

@@ -57,6 +57,8 @@ class TransaksiController extends Controller
 
     public function store(Request $request)
     {
+        \Log::debug('Data Request:', $request->all());
+        
         // Validasi input
         $request->validate([
             'nama_pelanggan' => 'required|string|max:255',
@@ -69,15 +71,28 @@ class TransaksiController extends Controller
             'total_harga' => 'required|numeric|min:0'
         ]);
 
+
         DB::beginTransaction();
 
+
         try {
-            $total = $request->total_harga;
-            $bayar = $request->bayar;
-            
-            if ($bayar < $total) {
-                throw new \Exception("Jumlah pembayaran kurang dari total transaksi");
+
+        $total = $request->total_harga;
+        $bayar = $request->bayar;
+        
+        if ($bayar < $total) {
+            throw new \Exception("Jumlah pembayaran kurang dari total transaksi");
+        }
+
+        // Validasi stok sebelum transaksi
+        foreach ($request->produk as $item) {
+            $produk = Produk::find($item['id']);
+            if ($produk->stok_produk < $item['qty']) {
+                throw new \Exception("Stok produk {$produk->nama_produk} tidak mencukupi");
             }
+        }
+
+
 
             // Buat transaksi
             $transaksi = Transaksi::create([
@@ -91,35 +106,32 @@ class TransaksiController extends Controller
                 'status' => $bayar >= $total ? 'Lunas' : 'Belum Lunas'
             ]);
 
-            // Simpan detail transaksi
-            foreach ($request->produk as $item) {
-                $produk = Produk::findOrFail($item['id']);
-                
-                if ($produk->stok_produk < $item['qty']) {
-                    throw new \Exception("Stok produk {$produk->nama_produk} tidak mencukupi");
-                }
+            // Simpan detail transaksi dan kurangi stok
+        foreach ($request->produk as $item) {
+            $produk = Produk::find($item['id']);
+            
+            $transaksi->detailTransaksi()->create([
+                'produk_id' => $item['id'],
+                'qty' => $item['qty'],
+                'harga' => $item['harga'],
+                'subtotal' => $item['qty'] * $item['harga']
+            ]);
 
-                $transaksi->detailTransaksi()->create([
-                    'produk_id' => $produk->id,
-                    'qty' => $item['qty'],
-                    'harga' => $item['harga'],
-                    'subtotal' => $item['qty'] * $item['harga']
-                ]);
-
-                // Kurangi stok
-                $produk->decrement('stok_produk', $item['qty']);
-            }
-
-            DB::commit();
-
-            return redirect()->route('transaksi.index')
-                ->with('success', 'Transaksi berhasil dibuat! Kode: ' . $transaksi->kode);
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->withInput()->withErrors(['error' => $e->getMessage()]);
+            // Kurangi stok produk
+            $produk->decrement('stok_produk', $item['qty']);
         }
+
+        DB::commit();
+
+        return redirect()->route('transaksi.index')
+            ->with('success', 'Transaksi berhasil dibuat!');
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return back()->withErrors(['error' => $e->getMessage()]);
     }
+}
+
 
     public function show(Transaksi $transaksi)
 {
@@ -166,66 +178,55 @@ class TransaksiController extends Controller
     // perubahan
     public function update(Request $request, Transaksi $transaksi)
 {
-
-    // Validasi akses
-    if (auth()->user()->hasRole('kasir') && $transaksi->user_id != auth()->id()) {
-        abort(403, 'Anda hanya bisa mengedit transaksi Anda sendiri.');
-    }
-
     $request->validate([
-        'nama_pelanggan' => 'required|string|max:255',
+        'nama_pelanggan' => 'required',
         'tanggal' => 'required|date',
         'produk' => 'required|array|min:1',
         'produk.*.id' => 'required|exists:produk,id',
         'produk.*.qty' => 'required|integer|min:1',
         'produk.*.harga' => 'required|numeric|min:0',
         'bayar' => 'required|numeric|min:0',
-        'total' => 'required|numeric|min:0'
+        'total_harga' => 'required|numeric|min:0'
     ]);
 
     DB::beginTransaction();
 
     try {
-        $total = $request->total;
-        $bayar = $request->bayar;
-        $status = $bayar >= $total ? 'Lunas' : 'Belum Lunas';
-
         // Kembalikan stok lama
         foreach ($transaksi->detailTransaksi as $detail) {
-            if ($produk = $detail->produk) {
-                $produk->increment('stok_produk', $detail->qty);
-            }
+            $produk = $detail->produk;
+            $produk->increment('stok_produk', $detail->qty);
         }
 
         // Update transaksi utama
         $transaksi->update([
             'nama_pelanggan' => $request->nama_pelanggan,
-            'total' => $total,
-            'bayar' => $bayar,
-            'kembalian' => $status === 'Lunas' ? ($bayar - $total) : 0,
+            'total' => $request->total_harga,
+            'bayar' => $request->bayar,
+            'kembalian' => $request->bayar - $request->total_harga,
             'tanggal' => $request->tanggal,
-            'status' => $status
+            'status' => 'Lunas'
         ]);
 
         // Hapus detail lama
         $transaksi->detailTransaksi()->delete();
 
-        // Simpan detail baru
-        foreach ($request->produk as $id => $item) {
-            $produk = Produk::findOrFail($id);
+        // Simpan detail baru dan kurangi stok
+        foreach ($request->produk as $item) {
+            $produk = Produk::find($item['id']);
             
             if ($produk->stok_produk < $item['qty']) {
                 throw new \Exception("Stok produk {$produk->nama_produk} tidak mencukupi");
             }
 
             $transaksi->detailTransaksi()->create([
-                'produk_id' => $id,
+                'produk_id' => $item['id'],
                 'qty' => $item['qty'],
                 'harga' => $item['harga'],
-                'subtotal' => $item['subtotal']
+                'subtotal' => $item['qty'] * $item['harga']
             ]);
 
-            // Kurangi stok baru
+            // Kurangi stok produk
             $produk->decrement('stok_produk', $item['qty']);
         }
 
@@ -236,31 +237,28 @@ class TransaksiController extends Controller
 
     } catch (\Exception $e) {
         DB::rollBack();
-        return back()->withInput()->withErrors(['error' => $e->getMessage()]);
+        return back()->withErrors(['error' => $e->getMessage()]);
     }
 }
     //  end perubahan
 
     public function destroy(Transaksi $transaksi)
-    {
-        // Validasi hak akses
-        if (auth()->user()->hasRole('kasir') && $transaksi->user_id !== auth()->id()) {
-            abort(403);
+{
+    DB::transaction(function () use ($transaksi) {
+        // Kembalikan stok produk
+        foreach ($transaksi->detailTransaksi as $detail) {
+            $produk = $detail->produk;
+            $produk->increment('stok_produk', $detail->qty);
         }
-
-        DB::transaction(function () use ($transaksi) {
-            // Kembalikan stok
-            foreach ($transaksi->detailTransaksi as $detail) {
-                Produk::where('id', $detail->produk_id)
-                    ->increment('stok_produk', $detail->qty);
-            }
-            
-            // Hapus detail dan transaksi
-            $transaksi->detailTransaksi()->delete();
-            $transaksi->delete();
-        });
         
-        return redirect()->route('transaksi.index')
-            ->with('success', 'Transaksi berhasil dihapus!');
-    }
+        // Hapus detail transaksi
+        $transaksi->detailTransaksi()->delete();
+        
+        // Hapus transaksi
+        $transaksi->delete();
+    });
+
+    return redirect()->route('transaksi.index')
+        ->with('success', 'Transaksi berhasil dihapus!');
+}
 }

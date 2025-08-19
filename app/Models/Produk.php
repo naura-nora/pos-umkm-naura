@@ -46,7 +46,6 @@ class Produk extends Model
         return null;
     }
 
-    // app/Models/Produk.php
     public function detailTransaksi()
     {
         return $this->hasMany(DetailTransaksi::class, 'produk_id');

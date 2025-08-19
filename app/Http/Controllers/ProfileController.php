@@ -23,24 +23,24 @@ class ProfileController extends Controller
     }
 
     public function update(Request $request)
-{
-    $user = auth()->user();
+    {
+        $user = auth()->user();
+        
+        // Perbaikan 1: Simpan hasil validasi ke variabel $validated
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:255'
+        ]);
+
+        // Perbaikan 2: Gunakan variabel $validated yang sudah didefinisikan
+        $user->update($validated);
     
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
-        // Remove phone and address validation if columns don't exist
-    ]);
+        return redirect()->route('profile.show')
+            ->with('success', 'Profil berhasil diperbarui!');
+    }
 
-    $user->update([
-        'name' => $request->name,
-        'email' => $request->email,
-        // Don't include phone and address in the update if columns don't exist
-    ]);
-
-    return redirect()->route('profile.show')
-        ->with('success', 'Profil berhasil diperbarui!');
-}
 
     public function changePassword()
     {
