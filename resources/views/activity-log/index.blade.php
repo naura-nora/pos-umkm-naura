@@ -38,7 +38,7 @@
                 <table class="table table-bordered table-striped">
                     <thead class="bg-secondary text-white">
                         <tr>
-                            <th>#</th>
+                            <th>No</th>
                             <th>User</th>
                             <th>Event</th>
                             <th>Deskripsi</th>

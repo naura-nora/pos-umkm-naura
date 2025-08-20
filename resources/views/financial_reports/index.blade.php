@@ -7,13 +7,8 @@
     <h3 class="mb-0 text-bold">Laporan Keuangan</h3>
     <div class="ml-auto d-flex"> <!-- Tambah ml-auto di sini -->
         <div class="btn-rounded mr-2"> <!-- Jarak antar tombol 2 -->
-            <a href="{{ route('financial-reports.create', ['type' => 'income']) }}" class="btn btn-light text-dark">
-                <i class="fas fa-plus-circle mr-1"></i> Tambah Pemasukan
-            </a>
-        </div>
-        <div class="btn-rounded">
-            <a href="{{ route('financial-reports.create', ['type' => 'expense']) }}" class="btn btn-light text-dark">
-                <i class="fas fa-minus-circle mr-1"></i> Tambah Pengeluaran
+            <a href="{{ route('financial-reports.create') }}" class="btn btn-light text-dark btn-rounded">
+                <i class="fas fa-plus-circle mr-1"></i> Tambah Pemasukan / Pengeluaran
             </a>
         </div>
     </div>

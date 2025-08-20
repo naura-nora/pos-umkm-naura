@@ -8,66 +8,44 @@
         <h1 class="h3 mb-0 text-dark">
             <i class="fas fa-user-circle mr-2 text-primary"></i>Profil Saya
         </h1>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb bg-transparent p-0">
-                <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none">Dashboard 1</a></li>
-            </ol>
-        </nav>
     </div>
 
     <div class="row">
         <!-- Left Column -->
-        <div class="col-lg-3">
-            <div class="card profile-summary-card mb-4">
+        <div class="col-lg-4">
+            <div class="card profile-summary-card mb-4" style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);">
                 <div class="card-body text-center p-4">
-                    <div class="profile-icon mx-auto mb-3">
+                    <div class="profile-picture-container mx-auto mb-3 position-relative">
                         @if(Auth::user()->photo)
-                            <img src="{{ asset('storage/'.Auth::user()->photo) }}" alt="Foto profil" class="img-thumbnail rounded-circle">
+                            <img src="{{ asset('storage/'.Auth::user()->photo) }}" alt="Foto profil" class="img-thumbnail rounded-circle profile-picture">
                         @else
-                            <i class="fas fa-user-circle"></i>
+                            <div class="profile-icon rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="fas fa-user text-white"></i>
+                            </div>
                         @endif
+                        <button class="btn btn-sm btn-primary rounded-circle change-photo-btn" data-toggle="modal" data-target="#changePhotoModal" title="Ubah Foto">
+                            <i class="fas fa-camera"></i>
+                        </button>
                     </div>
-                    <h4 class="mb-1">{{ Auth::user()->name }}</h4>
-                    <p class="text-muted mb-3">{{ Auth::user()->email }}</p>
+                    <h4 class="mb-1 text-white">{{ Auth::user()->name }}</h4>
+                    <p class="text-white mb-3">{{ Auth::user()->email }}</p>
                     
                     <div class="d-flex justify-content-center mb-3">
                         <div class="px-3 text-center">
-                            <div class="h5 mb-0">{{ Auth::user()->created_at->format('d M Y') }}</div>
-                            <small class="text-muted">Bergabung</small>
+                            <div class="h5 mb-0 text-white">{{ Auth::user()->created_at->format('d M Y') }}</div>
+                            <small class="text-white">Bergabung</small>
                         </div>
-                        <div class="px-3 text-center border-start">
-                            <div class="h5 mb-0">{{ Auth::user()->updated_at->format('d M Y') }}</div>
-                            <small class="text-muted">Diperbarui</small>
+                        <div class="px-3 text-center border-left">
+                            <div class="h5 mb-0 text-white">{{ Auth::user()->updated_at->format('d M Y') }}</div>
+                            <small class="text-white">Diperbarui</small>
                         </div>
                     </div>
                     
                     <hr class="my-3">
                     
                     <div class="d-grid gap-2">
-                        <a href="{{ route('profile.edit') }}" class="btn btn-sm btn-primary rounded">
+                        <a href="{{ route('profile.edit') }}" class="btn btn-sm btn-warning rounded-3">
                             <i class="fas fa-pencil-alt mr-2"></i> Edit Profil
-                        </a>
-                        <a href="{{ route('profile.change-password') }}" class="btn btn-sm btn-outline-secondary rounded">
-                            <i class="fas fa-lock mr-2"></i> Keamanan
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card quick-links-card mb-4">
-                <div class="card-header bg-white">
-                    <h6 class="mb-0"><i class="fas fa-link mr-2"></i>Quick Links</h6>
-                </div>
-                <div class="card-body p-0">
-                    <div class="list-group list-group-flush">
-                        <a href="#" class="list-group-item list-group-item-action">
-                            <i class="fas fa-cog mr-2 text-primary"></i> Pengaturan Akun
-                        </a>
-                        <a href="#" class="list-group-item list-group-item-action">
-                            <i class="fas fa-bell mr-2 text-primary"></i> Notifikasi
-                        </a>
-                        <a href="#" class="list-group-item list-group-item-action">
-                            <i class="fas fa-shield-alt mr-2 text-primary"></i> Privasi
                         </a>
                     </div>
                 </div>
@@ -75,19 +53,10 @@
         </div>
         
         <!-- Right Column -->
-        <div class="col-lg-9">
-            <div class="card main-profile-card mb-4">
-                <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="fas fa-info-circle mr-2 text-primary"></i>Informasi Profil</h5>
-                    <div class="dropdown">
-                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
-                            <i class="fas fa-ellipsis-v"></i>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-print mr-2"></i> Cetak</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-download mr-2"></i> Unduh</a></li>
-                        </ul>
-                    </div>
+        <div class="col-lg-8">
+            <div class="card main-profile-card mb-4" >
+                <div class="card-header d-flex justify-content-between align-items-center" style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);">
+                    <h5 class="mb-0 text-white"><i class="fas fa-info-circle mr-2 text-warning"></i>Informasi Profil</h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -100,15 +69,11 @@
                                 <label class="text-muted small mb-1">Email</label>
                                 <p class="mb-0 fw-bold">{{ Auth::user()->email }}</p>
                             </div>
+                        </div>
+                        <div class="col-md-6">
                             <div class="info-item mb-4">
                                 <label class="text-muted small mb-1">Nomor Telepon</label>
                                 <p class="mb-0 fw-bold">{{ Auth::user()->phone ?: '-' }}</p>
-                            </div>
-                        </div>
-                        
-                            <div class="info-item mb-4">
-                                <label class="text-muted small mb-1">Bergabung Pada</label>
-                                <p class="mb-0 fw-bold">{{ Auth::user()->created_at->format('d F Y') }}</p>
                             </div>
                             <div class="info-item mb-4">
                                 <label class="text-muted small mb-1">Alamat</label>
@@ -116,88 +81,11 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <hr class="my-4">
-                    
-                    <h5 class="mb-3"><i class="fas fa-shield-alt mr-2 text-primary"></i>Keamanan Akun</h5>
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="security-status p-3 mb-3 rounded">
-                                <div class="d-flex align-items-center">
-                                    <div class="status-icon bg-success text-white rounded-circle me-3">
-                                        <i class="fas fa-check"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-0">Email Terverifikasi</h6>
-                                        <small class="text-muted">Status email sudah terverifikasi</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="security-status p-3 mb-3 rounded">
-                                <div class="d-flex align-items-center">
-                                    <div class="status-icon bg-warning text-white rounded-circle me-3">
-                                        <i class="fas fa-exclamation"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-0">Kata Sandi</h6>
-                                        <small class="text-muted">Diubah 3 bulan lalu</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <hr class="my-4">
-                    
-                    <h5 class="mb-3"><i class="fas fa-history mr-2 text-primary"></i>Aktivitas Terakhir</h5>
-                    <div class="activity-feed">
-                        <div class="activity-item d-flex mb-3">
-                            <div class="activity-icon bg-primary text-white rounded-circle me-3">
-                                <i class="fas fa-sign-in-alt"></i>
-                            </div>
-                            <div class="activity-details flex-grow-1">
-                                <h6 class="mb-1">Login ke sistem</h6>
-                                <p class="text-muted small mb-0">Hari ini, 10:45 AM</p>
-                                <p class="text-muted small">
-                                    <i class="fas fa-globe mr-1"></i> IP: 192.168.1.1 • Browser: Chrome
-                                </p>
-                            </div>
-                            <div class="activity-time text-muted small">
-                                10:45 AM
-                            </div>
-                        </div>
-                        
-                        <div class="activity-item d-flex mb-3">
-                            <div class="activity-icon bg-info text-white rounded-circle me-3">
-                                <i class="fas fa-edit"></i>
-                            </div>
-                            <div class="activity-details flex-grow-1">
-                                <h6 class="mb-1">Mengupdate profil</h6>
-                                <p class="text-muted small mb-0">Kemarin, 2:30 PM</p>
-                                <p class="text-muted small">
-                                    <i class="fas fa-user-edit mr-1"></i> Informasi pribadi
-                                </p>
-                            </div>
-                            <div class="activity-time text-muted small">
-                                2:30 PM
-                            </div>
-                        </div>
-                        
-                        <div class="activity-item d-flex">
-                            <div class="activity-icon bg-success text-white rounded-circle me-3">
-                                <i class="fas fa-key"></i>
-                            </div>
-                            <div class="activity-details flex-grow-1">
-                                <h6 class="mb-1">Mengubah kata sandi</h6>
-                                <p class="text-muted small mb-0">2 hari lalu, 9:15 AM</p>
-                                <p class="text-muted small">
-                                    <i class="fas fa-shield-alt mr-1"></i> Keamanan akun
-                                </p>
-                            </div>
-                            <div class="activity-time text-muted small">
-                                9:15 AM
+                        <div class="col-12">
+                            <div class="info-item">
+                                <label class="text-muted small mb-1">Bergabung Pada</label>
+                                <p class="mb-0 fw-bold">{{ Auth::user()->created_at->format('d F Y') }}</p>
                             </div>
                         </div>
                     </div>
@@ -263,6 +151,7 @@
     .profile-summary-card {
         border: none;
         box-shadow: var(--card-shadow);
+        border-radius: 10px;
         transition: all 0.3s ease;
     }
     
@@ -271,75 +160,53 @@
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     }
     
-    .profile-icon {
-        width: 120px;
-        height: 120px;
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2.5rem;
-        margin: 0 auto 1rem;
-        overflow: hidden;
+    .profile-picture-container {
+        width: 150px;
+        height: 150px;
+        position: relative;
     }
     
-    .profile-icon img {
+    .profile-picture {
         width: 100%;
         height: 100%;
         object-fit: cover;
     }
     
-    .quick-links-card {
-        border: none;
-        box-shadow: var(--card-shadow);
+    .profile-icon {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        font-size: 3.5rem;
+    }
+    
+    .change-photo-btn {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     
     .main-profile-card {
         border: none;
         box-shadow: var(--card-shadow);
+        border-radius: 10px;
     }
     
     .info-item {
         padding: 1rem;
         background-color: rgba(58, 123, 213, 0.05);
         border-radius: 8px;
-    }
-    
-    .security-status {
-        background-color: rgba(58, 123, 213, 0.05);
         transition: all 0.3s ease;
     }
     
-    .security-status:hover {
+    .info-item:hover {
         background-color: rgba(58, 123, 213, 0.1);
-    }
-    
-    .status-icon {
-        width: 36px;
-        height: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    .activity-icon {
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    .activity-item {
-        padding: 1rem;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-    }
-    
-    .activity-item:hover {
-        background-color: rgba(58, 123, 213, 0.05);
     }
     
     .btn-primary {
@@ -351,15 +218,6 @@
         border-color: #dee2e6;
     }
     
-    .badge {
-        padding: 0.35em 0.65em;
-        font-weight: 500;
-    }
-    
-    hr {
-        opacity: 0.1;
-    }
-    
     .upload-area {
         border: 2px dashed #dee2e6;
         border-radius: 8px;
@@ -369,6 +227,26 @@
     .upload-area:hover {
         border-color: var(--primary-color);
         background-color: rgba(58, 123, 213, 0.05);
+    }
+    
+    .custom-file-label {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .dropdown-menu {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        border: none;
+    }
+    
+    .dropdown-item {
+        padding: 0.5rem 1.5rem;
+    }
+    
+    .dropdown-item:hover {
+        background-color: rgba(58, 123, 213, 0.1);
+        color: var(--primary-color);
     }
 </style>
 @endsection
@@ -456,6 +334,12 @@
                 $('#photoInput')[0].files = e.originalEvent.dataTransfer.files;
                 $('#photoInput').trigger('change');
             }
+        });
+        
+        // Update file name when file is selected
+        $('#photoInput').on('change', function() {
+            var fileName = $(this).val().split('\\').pop();
+            $(this).next('.custom-file-label').html(fileName);
         });
     });
 </script>

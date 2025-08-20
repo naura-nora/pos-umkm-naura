@@ -36,13 +36,6 @@
                     <input type="number" name="amount" id="amount" 
                            class="form-control" min="0" step="0.01" required>
                 </div>
-
-                @if($type == 'expense')
-                <div class="form-group">
-                    <label>Penanggung Jawab</label>
-                    <input type="text" name="responsible" class="form-control" required>
-                </div>
-                @endif
                 
                 <button type="submit" class="btn btn-primary">Simpan</button>
                 <a href="{{ route('financial-reports.index') }}" class="btn btn-secondary">

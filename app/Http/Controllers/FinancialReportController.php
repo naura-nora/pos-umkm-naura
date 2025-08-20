@@ -66,8 +66,8 @@ class FinancialReportController extends Controller
      */
     public function create(Request $request)
     {
-        $type = $request->get('type', 'income');
-        return view('financial_reports.create', compact('type'));
+        // $type = $request->get('type', 'income');
+        return view('financial_reports.create');
     }
 
     /**
@@ -78,44 +78,20 @@ class FinancialReportController extends Controller
     $request->validate([
         'report_date' => 'required|date',
         'description' => 'required|string|max:255',
-        'type' => 'required|in:income,expense',
-        'amount' => 'required|numeric|min:0',
-        'responsible' => 'required_if:type,expense|nullable|string|max:255'
+        'type'        => 'required|in:income,expense', // ✅ Validasi
+        'amount'      => 'required|numeric|min:0',
     ]);
 
-    try {
-        $data = [
-            'report_date' => $request->report_date,
-            'description' => $request->description,
-            'type' => $request->type,
-            'amount' => $request->amount,
-            'user_id' => auth()->id(),
-            'source' => $request->type == 'income' ? 'manual' : 'expense', // Ubah ini
-            'responsible' => $request->type == 'expense' ? $request->responsible : null
-        ];
+    FinancialReport::create([
+        'report_date'   => $request->report_date,
+        'description'   => $request->description,
+        'type'          => $request->type,      // ✅ Ambil dari dropdown
+        'amount'        => $request->amount,
+        'responsible'   => auth()->user()->name,
+        'user_id'       => auth()->id(),
+    ]);
 
-        FinancialReport::create($data);
-
-        $message = $request->type == 'income' 
-            ? 'Pemasukan berhasil ditambahkan!' 
-            : 'Pengeluaran berhasil ditambahkan!';
-
-        return redirect()->route('financial-reports.index')
-            ->with([
-                'alert_type' => 'success',
-                'alert_message' => $message,
-                'alert_icon' => 'check-circle'
-            ]);
-
-    } catch (\Exception $e) {
-        return redirect()->back()
-            ->with([
-                'alert_type' => 'danger',
-                'alert_message' => 'Gagal menambahkan data: ' . $e->getMessage(),
-                'alert_icon' => 'exclamation-triangle'
-            ])
-            ->withInput();
-    }
+    return redirect()->route('financial-reports.index')->with('success', 'Data berhasil ditambahkan.');
 }
     /**
      * Display the specified resource.

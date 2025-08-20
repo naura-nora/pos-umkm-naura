@@ -34,8 +34,7 @@
                         <div class="form-group">
                             <label for="nama_produk">Nama Produk <span class="text-danger">*</span></label>
                             <input type="text" class="form-control @error('nama_produk') is-invalid @enderror" 
-                                   id="nama_produk" name="nama_produk" value="{{ old('nama_produk') }}" 
-                                   placeholder="Masukkan nama produk" required>
+                                   id="nama_produk" name="nama_produk" value="{{ old('nama_produk') }}" required>
                             @error('nama_produk')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -45,7 +44,7 @@
                             <label for="harga_produk">Harga (Rp) <span class="text-danger">*</span></label>
                             <input type="number" class="form-control @error('harga_produk') is-invalid @enderror" 
                                    id="harga_produk" name="harga_produk" value="{{ old('harga_produk') }}" 
-                                   min="0" step="100" placeholder="Masukkan harga" required>
+                                   min="0" step="100" required>
                             @error('harga_produk')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -57,7 +56,7 @@
                             <label for="stok_produk">Stok <span class="text-danger">*</span></label>
                             <input type="number" class="form-control @error('stok_produk') is-invalid @enderror" 
                                    id="stok_produk" name="stok_produk" value="{{ old('stok_produk') }}" 
-                                   min="0" placeholder="Masukkan jumlah stok" required>
+                                   min="0" required>
                             @error('stok_produk')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -86,7 +85,7 @@
                     <div class="custom-file">
                         <input type="file" class="custom-file-input @error('gambar_produk') is-invalid @enderror" 
                                id="gambar_produk" name="gambar_produk" accept="image/*">
-                        <label class="custom-file-label" for="gambar_produk">Pilih file gambar...</label>
+                        <label class="custom-file-label" for="gambar_produk">Pilih file gambar</label>
                         @error('gambar_produk')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror

@@ -335,6 +335,110 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
         });
         
+        document.querySelector('form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        // Validasi: minimal 1 produk
+        if (produkList.length === 0) {
+            await Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Tambahkan minimal 1 produk!',
+                confirmButtonColor: '#3085d6',
+            });
+            return;
+        }
+
+        const total = totalHarga;
+        const bayar = parseFloat(bayarInput.value) || 0;
+
+        // Tentukan status berdasarkan pembayaran
+        const status = bayar >= total ? 'Lunas' : 'Belum Lunas';
+        
+        // Tampilkan konfirmasi jika status Belum Lunas
+        if (status === 'Belum Lunas') {
+            const kekurangan = total - bayar;
+            const result = await Swal.fire({
+                title: 'Pembayaran Kurang!',
+                html: `
+                    <p>Transaksi akan disimpan dengan status <strong>Belum Lunas</strong></p>
+                    <p>Kekurangan pembayaran: <b>${formatRupiah(kekurangan)}</b></p>
+                `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '✅ Simpan Transaksi',
+                cancelButtonText: '❌ Batal',
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#d33',
+                reverseButtons: true,
+                focusCancel: true
+            });
+
+            if (!result.isConfirmed) {
+                return;
+            }
+        }
+
+        // Tambahkan input status
+        const statusInput = document.createElement('input');
+        statusInput.type = 'hidden';
+        statusInput.name = 'status';
+        statusInput.value = status;
+        this.appendChild(statusInput);
+
+        // Tambahkan input total_harga
+        const totalInput = document.createElement('input');
+        totalInput.type = 'hidden';
+        totalInput.name = 'total_harga';
+        totalInput.value = total;
+        this.appendChild(totalInput);
+
+        // Tampilkan loading
+        Swal.fire({
+            title: 'Menyimpan Transaksi...',
+            html: 'Sedang memproses data transaksi.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        // Kirim form
+        try {
+            const formData = new FormData(this);
+            const response = await fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                }
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: data.message,
+                    confirmButtonColor: '#3085d6',
+                }).then(() => {
+                    window.location.href = data.redirect_url;
+                });
+            } else {
+                throw new Error(data.message || 'Terjadi kesalahan saat menyimpan.');
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal!',
+                text: error.message,
+                confirmButtonColor: '#3085d6',
+            });
+        }
+    });
+
         // Tambahkan input tersembunyi untuk total
         produkInputsContainer.innerHTML += `
             <input type="hidden" name="total_harga" value="${totalHarga}">

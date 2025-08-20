@@ -8,7 +8,8 @@
                 <h4 class="card-header text-bold text-white" style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);">Edit Transaksi - {{ $transaksi->kode }}</h4>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('transaksi.update', $transaksi->id) }}">
+                    <!-- HAPUS FORM DALAM FORM - ini penyebab utama masalah -->
+                    <form method="POST" action="{{ route('transaksi.update', $transaksi->id) }}" id="transaksiForm">
                         @csrf
                         @method('PUT')
 
@@ -120,7 +121,7 @@
                                 <tfoot>
                                     <tr>
                                         <th colspan="4" class="text-right">Total</th>
-                                        <th id="totalHarga">0</th>
+                                        <th id="totalHarga">{{ $transaksi->total }}</th>
                                         <th></th>
                                     </tr>
                                 </tfoot>
@@ -184,41 +185,27 @@ document.addEventListener('DOMContentLoaded', function() {
     const bayarInput = document.getElementById('bayar');
     const kembalianInput = document.getElementById('kembalian');
     const produkInputsContainer = document.getElementById('produkInputsContainer');
+    const transaksiForm = document.getElementById('transaksiForm');
     
-    let produkList = [];
+    // Ambil data dari controller (sudah diproses)
+    let produkList = @json($produkList);
     let totalHarga = {{ $transaksi->total }};
 
-    // Pre-populate produkList dari detail transaksi
-    @foreach($transaksi->detailTransaksi as $detail)
-        produkList.push({
-            id: '{{ $detail->produk_id }}',
-            nama: '{{ $detail->produk->nama_produk }}',
-            kategori: '{{ $detail->produk->kategori->nama_kategori ?? "Tidak ada kategori" }}',
-            harga: {{ $detail->harga }},
-            qty: {{ $detail->qty }},
-            subtotal: {{ $detail->subtotal }}
-        });
-    @endforeach
-
-    // Update tampilan tabel saat load
+    // Inisialisasi tabel dengan data existing
     updateProdukTable();
 
     // Auto fill ketika produk dipilih
     produkSelect.addEventListener('change', function() {
         const selectedOption = this.options[this.selectedIndex];
-        
-        // Isi data otomatis
         kategoriInput.value = selectedOption.dataset.kategori || 'Tidak ada kategori';
         hargaSatuanInput.value = selectedOption.dataset.harga || '0';
         stokInput.value = selectedOption.dataset.stok || '0';
-        
-        // Update maksimal quantity
         maxQtySpan.textContent = selectedOption.dataset.stok || '0';
         qtyInput.max = selectedOption.dataset.stok || '';
-        qtyInput.value = 1; // Reset ke 1 setiap ganti produk
+        qtyInput.value = 1;
     });
 
-    // Tambah produk ke tabel
+    // Tambah produk
     tambahProdukBtn.addEventListener('click', function() {
         const selectedOption = produkSelect.options[produkSelect.selectedIndex];
         const produkId = produkSelect.value;
@@ -227,32 +214,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const hargaSatuan = parseFloat(selectedOption.dataset.harga) || 0;
         const stok = parseInt(selectedOption.dataset.stok) || 0;
         const qty = parseInt(qtyInput.value) || 0;
-        
-        // Validasi
-        if (!produkId) {
-            alert('Pilih produk terlebih dahulu');
-            return;
-        }
-        
-        if (qty < 1) {
-            alert('Jumlah tidak valid');
-            return;
-        }
-        
-        if (qty > stok) {
-            alert('Jumlah melebihi stok tersedia');
-            return;
-        }
-        
-        // Cek apakah produk sudah ada di list
-        const existingProdukIndex = produkList.findIndex(p => p.id === produkId);
-        
-        if (existingProdukIndex >= 0) {
-            // Update jumlah jika produk sudah ada
-            produkList[existingProdukIndex].qty += qty;
-            produkList[existingProdukIndex].subtotal = produkList[existingProdukIndex].qty * hargaSatuan;
+
+        if (!produkId) return alert('Pilih produk terlebih dahulu');
+        if (qty < 1) return alert('Jumlah tidak valid');
+        if (qty > stok) return alert('Jumlah melebihi stok');
+
+        const existingIndex = produkList.findIndex(p => p.id === produkId);
+        if (existingIndex >= 0) {
+            produkList[existingIndex].qty += qty;
+            produkList[existingIndex].subtotal = produkList[existingIndex].qty * hargaSatuan;
         } else {
-            // Tambahkan produk baru ke list
             produkList.push({
                 id: produkId,
                 nama: namaProduk,
@@ -262,33 +233,51 @@ document.addEventListener('DOMContentLoaded', function() {
                 subtotal: qty * hargaSatuan
             });
         }
-        
-        // Update tampilan tabel
+
         updateProdukTable();
-        
-        // Reset form
+        resetForm();
+    });
+
+    // Hapus produk
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('hapusProdukBtn')) {
+            const index = parseInt(e.target.dataset.index);
+            produkList.splice(index, 1);
+            updateProdukTable();
+        }
+    });
+
+    // Hitung kembalian
+    bayarInput.addEventListener('input', updateKembalian);
+    function updateKembalian() {
+        const bayar = parseFloat(bayarInput.value) || 0;
+        const kembalian = bayar - totalHarga;
+        kembalianInput.value = kembalian > 0 ? kembalian : 0;
+    }
+
+    // Format Rupiah
+    function formatRupiah(angka) {
+        return 'Rp ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    // Reset form
+    function resetForm() {
         produkSelect.value = '';
         kategoriInput.value = '';
         hargaSatuanInput.value = '';
         stokInput.value = '';
         qtyInput.value = 1;
         maxQtySpan.textContent = '0';
-    });
+    }
 
-    // Update tabel produk
+    // Update tabel
     function updateProdukTable() {
-        // Kosongkan tabel
         produkTable.innerHTML = '';
-        
-        // Hitung total harga
         totalHarga = 0;
-        
-        // Tambahkan setiap produk ke tabel
+
         produkList.forEach((produk, index) => {
             totalHarga += produk.subtotal;
-            
             const row = produkTable.insertRow();
-            
             row.innerHTML = `
                 <td>${produk.nama}</td>
                 <td>${produk.kategori}</td>
@@ -302,61 +291,48 @@ document.addEventListener('DOMContentLoaded', function() {
                 </td>
             `;
         });
-        
-        // Update total harga
+
         totalHargaEl.textContent = formatRupiah(totalHarga);
-        
-        // Update kembalian jika sudah ada nilai bayar
-        if (bayarInput.value) {
-            updateKembalian();
-        }
-        
-        // Update input tersembunyi untuk form submission
+        updateKembalian();
         updateProdukInputs();
     }
 
-    // Hapus produk dari tabel
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('hapusProdukBtn')) {
-            const index = parseInt(e.target.dataset.index);
-            produkList.splice(index, 1);
-            updateProdukTable();
-        }
-    });
-
-    // Hitung kembalian ketika bayar berubah
-    bayarInput.addEventListener('input', updateKembalian);
-    
-    function updateKembalian() {
-        const bayar = parseFloat(bayarInput.value) || 0;
-        kembalianInput.value = bayar - totalHarga;
-    }
-
-    // Format angka ke format Rupiah
-    function formatRupiah(angka) {
-        return 'Rp ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
-
-    // Update input tersembunyi untuk form submission
+    // Update input tersembunyi
     function updateProdukInputs() {
-        // Kosongkan container
         produkInputsContainer.innerHTML = '';
-        
-        // Tambahkan input tersembunyi untuk setiap produk
         produkList.forEach((produk, index) => {
             produkInputsContainer.innerHTML += `
-                <input type="hidden" name="produk[${produk.id}][id]" value="${produk.id}">
-                <input type="hidden" name="produk[${produk.id}][qty]" value="${produk.qty}">
-                <input type="hidden" name="produk[${produk.id}][harga]" value="${produk.harga}">
-                <input type="hidden" name="produk[${produk.id}][subtotal]" value="${produk.subtotal}">
+                <input type="hidden" name="produk[${index}][id]" value="${produk.id}">
+                <input type="hidden" name="produk[${index}][qty]" value="${produk.qty}">
+                <input type="hidden" name="produk[${index}][harga]" value="${produk.harga}">
+                <input type="hidden" name="produk[${index}][subtotal]" value="${produk.subtotal}">
             `;
         });
-        
-        // Tambahkan input tersembunyi untuk total
         produkInputsContainer.innerHTML += `
-            <input type="hidden" name="total" value="${totalHarga}">
+            <input type="hidden" name="total_harga" value="${totalHarga}">
         `;
     }
+
+    // Handle form submission
+    transaksiForm.addEventListener('submit', function(e) {
+        // Validasi minimal 1 produk
+        if (produkList.length === 0) {
+            e.preventDefault();
+            alert('Tambahkan minimal 1 produk!');
+            return false;
+        }
+        
+        // Validasi pembayaran
+        const bayar = parseFloat(bayarInput.value) || 0;
+        if (bayar < totalHarga) {
+            if (!confirm('Pembayaran kurang dari total. Transaksi akan disimpan sebagai Belum Lunas. Lanjutkan?')) {
+                e.preventDefault();
+                return false;
+            }
+        }
+        
+        return true;
+    });
 });
 </script>
 @endsection
