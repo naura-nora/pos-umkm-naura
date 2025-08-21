@@ -188,7 +188,8 @@
                                     <td>{{ $expense->description }}</td>
                                     <td>{{ $expense->report_date->format('d/m/Y') }}</td>
                                     <td>Rp {{ number_format($expense->amount, 0, ',', '.') }}</td>
-                                    <td>{{ $expense->responsible }}</td>
+                                    <td>{{ $expense->user->name }}</td>
+                                    <!-- <td>{{ $expense->responsible }}</td> -->
                                     <td>
                                         <div class="d-flex gap-2">
                                             <a href="{{ route('financial-reports.edit', $expense->id) }}" 

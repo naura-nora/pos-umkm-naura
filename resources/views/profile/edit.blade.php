@@ -1,7 +1,6 @@
 @extends('layouts.adminlte')
 
 @section('content')
-<div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
@@ -23,9 +22,9 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="card card-primary">
-                        <div class="card-header">
-                            <h3 class="card-title">Form Edit Profil</h3>
+                    <div class="card">
+                        <div class="card-header" style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);">
+                            <h3 class="card-title text-white">Form Edit Profil</h3>
                         </div>
                         <form action="{{ route('profile.update') }}" method="POST">
                             @csrf
@@ -74,10 +73,10 @@
                             </div>
                             <div class="card-footer">
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save mr-2"></i> Simpan Perubahan
+                                    <i class=""></i> Simpan Perubahan
                                 </button>
-                                <a href="{{ route('profile.show') }}" class="btn btn-default">
-                                    <i class="fas fa-times mr-2"></i> Batal
+                                <a href="{{ route('profile.show') }}" class="btn btn-secondary">
+                                    <i class=""></i> Batal
                                 </a>
                             </div>
                         </form>

@@ -118,7 +118,7 @@ class FinancialReportController extends Controller
             'report_date' => 'required|date',
             'description' => 'required|string|max:255',
             'amount' => 'required|numeric|min:0',
-            'responsible' => $financialReport->type == 'expense' ? 'required|string|max:255' : 'nullable'
+            // 'responsible' => $financialReport->type == 'expense' ? 'required|string|max:255' : 'nullable'
         ]);
 
         $data = $request->only(['report_date', 'description', 'amount']);

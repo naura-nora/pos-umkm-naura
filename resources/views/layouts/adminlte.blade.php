@@ -11,9 +11,9 @@
     <!-- Google Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro">
     <!-- Sweet Alert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> -->
 </head>
-<body class="hold-transition sidebar-mini">
+<body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
 <div class="wrapper">
 
     @include('layouts.navbar')
@@ -53,6 +53,32 @@ $(document).ready(function() {
         });
     });
 </script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+@if(session('success'))
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Berhasil',
+        text: '{{ session('success') }}',
+        showConfirmButton: false,
+        timer: 2000
+    });
+</script>
+@endif
+
+@if(session('error'))
+<script>
+    Swal.fire({
+        icon: 'error',
+        title: 'Gagal',
+        text: '{{ session('error') }}',
+        showConfirmButton: true
+    });
+</script>
+@endif
 
 </body>
 </html>

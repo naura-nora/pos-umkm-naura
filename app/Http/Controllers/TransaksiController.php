@@ -108,11 +108,9 @@ class TransaksiController extends Controller
 
         DB::commit();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Transaksi berhasil disimpan.',
-            'redirect_url' => route('transaksi.index')
-        ]);
+        return redirect()
+        ->route('transaksi.index')
+        ->with('success', 'Transaksi berhasil disimpan.');
 
     } catch (\Exception $e) {
         DB::rollBack();
