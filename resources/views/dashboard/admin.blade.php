@@ -12,184 +12,215 @@
     </div>
 
     <!-- Statistik Cepat -->
-<style>
-    /* Efek hover untuk semua card */
-    .stat-card {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .stat-card:hover {
-        transform: scale(0.97);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    }
-</style>
+    <style>
+        /* Efek hover untuk semua card */
+        .stat-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .stat-card:hover {
+            transform: scale(0.97);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Konten responsif terhadap sidebar */
+        .content-wrapper {
+            transition: margin-left 0.3s ease;
+        }
+        
+        /* Ketika sidebar terbuka */
+        .sidebar-open .content-wrapper {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+        }
+        
+        /* Ketika sidebar tertutup */
+        .sidebar-collapse .content-wrapper {
+            margin-left: 0;
+            width: 100%;
+        }
+        
+        /* Untuk memastikan konten tetap responsif */
+        @media (max-width: 767.98px) {
+            .sidebar-open .content-wrapper,
+            .sidebar-collapse .content-wrapper {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+        
+        /* Footer styling default AdminLTE */
+        .main-footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+        }
+    </style>
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-xl-3 col-md-6 mb-4">
-            <a href="{{ route('produk.index') }}" class="text-decoration-none">
-                <div class="card shadow h-100 py-2 stat-card bg-light" style="border-left: 4px solid #f6c23e;">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="h6 font-weight-bold text-warning text-uppercase mb-1">
-                                    Total Produk</div>
-                                <div class="h3 mb-0 font-weight-bold text-dark">{{ $totalProduk }}</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-boxes fa-3x text-warning"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <a href="{{ route('transaksi.index', ['filter' => 'today']) }}" class="text-decoration-none">
-                <div class="card shadow h-100 py-2 stat-card bg-white" style="border-left: 4px solid #f6c23e;">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="h6 font-weight-bold text-warning text-uppercase mb-1">
-                                    Transaksi Hari Ini</div>
-                                <div class="h3 mb-0 font-weight-bold text-">{{ $transaksiHariIni }}</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-receipt fa-3x text-warning"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-<div class="col-xl-3 col-md-6 mb-4">
-    <a href="{{ route('kategori.index') }}" class="text-decoration-none">
-        <div class="card shadow h-100 py-2 stat-card" style="border-left: 4px solid #f6c23e;">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="h6 font-weight-bold text-warning text-uppercase mb-1">
-                            Total Kategori</div>
-                        <div class="h3 mb-0 font-weight-bold text-dark">{{ $totalKategori }}</div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-tags fa-3x text-warning"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </a>
-</div>
-
-<div class="col-xl-3 col-md-6 mb-4">
-    <a href="{{ route('user-management.index') }}" class="text-decoration-none">
-        <div class="card shadow h-100 py-2 stat-card" style="border-left: 4px solid #f6c23e;">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="h6 font-weight-bold text-warning text-uppercase mb-1">
-                            Pengguna Sistem</div>
-                        <div class="h3 mb-0 font-weight-bold text-dark">{{ $totalUser }}</div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-users fa-3x text-warning"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </a>
-</div>
-</div>
-
-    </div>
-
-    
-
+    <div class="container-fluid">
         <div class="row">
-    <!-- Produk Stok Rendah di Kiri -->
-    <div class="col-xl-8 col-lg-7">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between"
-                 style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);">
-                <h6 class="m-0 font-weight-bold text-white">Produk Dengan Stok Rendah</h6>
+            <div class="col-xl-3 col-md-6 mb-4">
+                <a href="{{ route('produk.index') }}" class="text-decoration-none">
+                    <div class="card shadow h-100 py-2 stat-card bg-light" style="border-left: 4px solid #f6c23e;">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="h6 font-weight-bold text-warning text-uppercase mb-1">
+                                        Total Produk</div>
+                                    <div class="h3 mb-0 font-weight-bold text-dark">{{ $totalProduk }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-boxes fa-3x text-warning"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
             </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover">
-                        <thead class="bg-secondary">
-                            <tr>
-                                <th>Nama Produk</th>
-                                <th>Kategori</th>
-                                <th>Stok Tersedia</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($stokRendah as $produk)
-                            <tr>
-                                <td>{{ $produk->nama_produk }}</td>
-                                <td>{{ $produk->kategori->nama_kategori ?? '-' }}</td>
-                                <td class="{{ $produk->stok_produk < 5 ? 'text-danger font-weight-bold' : '' }}">
-                                    {{ $produk->stok_produk }}
-                                </td>
-                                <td>
-                                    <a href="{{ route('produk.edit', $produk->id) }}" class="btn btn-sm btn-warning">
-                                        <i class="fas fa-edit"></i> Restock
-                                    </a>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="4" class="text-center">Tidak ada produk dengan stok rendah</td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <a href="{{ route('transaksi.index', ['filter' => 'today']) }}" class="text-decoration-none">
+                    <div class="card shadow h-100 py-2 stat-card bg-white" style="border-left: 4px solid #f6c23e;">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="h6 font-weight-bold text-warning text-uppercase mb-1">
+                                        Transaksi Hari Ini</div>
+                                    <div class="h3 mb-0 font-weight-bold text-">{{ $transaksiHariIni }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-receipt fa-3x text-warning"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <a href="{{ route('kategori.index') }}" class="text-decoration-none">
+                    <div class="card shadow h-100 py-2 stat-card" style="border-left: 4px solid #f6c23e;">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="h6 font-weight-bold text-warning text-uppercase mb-1">
+                                        Total Kategori</div>
+                                    <div class="h3 mb-0 font-weight-bold text-dark">{{ $totalKategori }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-tags fa-3x text-warning"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <a href="{{ route('user-management.index') }}" class="text-decoration-none">
+                    <div class="card shadow h-100 py-2 stat-card" style="border-left: 4px solid #f6c23e;">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="h6 font-weight-bold text-warning text-uppercase mb-1">
+                                        Pengguna Sistem</div>
+                                    <div class="h3 mb-0 font-weight-bold text-dark">{{ $totalUser }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-users fa-3x text-warning"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
             </div>
         </div>
     </div>
 
-    <!-- Aksi Cepat di Kanan -->
-    <div class="col-xl-4 col-lg-5">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between"
-                 style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);">
-                <h6 class="m-0 font-weight-bold text-white">Aksi Cepat</h6>
+    <div class="row">
+        <!-- Produk Stok Rendah di Kiri -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between"
+                     style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);">
+                    <h6 class="m-0 font-weight-bold text-white">Produk Dengan Stok Rendah</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="bg-secondary">
+                                <tr>
+                                    <th>Nama Produk</th>
+                                    <th>Kategori</th>
+                                    <th>Stok Tersedia</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($stokRendah as $produk)
+                                <tr>
+                                    <td>{{ $produk->nama_produk }}</td>
+                                    <td>{{ $produk->kategori->nama_kategori ?? '-' }}</td>
+                                    <td class="{{ $produk->stok_produk < 5 ? 'text-danger font-weight-bold' : '' }}">
+                                        {{ $produk->stok_produk }}
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('produk.edit', $produk->id) }}" class="btn btn-sm btn-warning">
+                                            <i class="fas fa-edit"></i> Restock
+                                        </a>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="4" class="text-center">Tidak ada produk dengan stok rendah</td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="d-grid gap-2">
-                    <a href="{{ route('produk.create') }}" class="btn btn-warning btn-icon-split mb-3" style="width:100%;">
-                        <span class="icon text-white-50">
-                            <i class="fas fa-plus"></i>
-                        </span>
-                        <span class="text">Tambah Produk Baru</span>
-                    </a>
-                    <a href="{{ route('transaksi.create') }}" class="btn btn-warning btn-icon-split mb-3" style="width:100%;">
-                        <span class="icon text-white-50">
-                            <i class="fas fa-cash-register"></i>
-                        </span>
-                        <span class="text">Buat Transaksi Baru</span>
-                    </a>
-                    <a href="{{ route('user-management.create') }}" class="btn btn-warning btn-icon-split mb-3" style="width:100%;">
-                        <span class="icon text-white-50">
-                            <i class="fas fa-user-plus"></i>
-                        </span>
-                        <span class="text">Tambah User Baru</span>
-                    </a>
-                    <a href="{{ route('kategori.create') }}" class="btn btn-warning btn-icon-split" style="width:100%;">
-                        <span class="icon text-white-50">
-                            <i class="fas fa-tag"></i>
-                        </span>
-                        <span class="text">Tambah Kategori</span>
-                    </a>
+        </div>
+
+        <!-- Aksi Cepat di Kanan -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between"
+                     style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);">
+                    <h6 class="m-0 font-weight-bold text-white">Aksi Cepat</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ route('produk.create') }}" class="btn btn-warning btn-icon-split mb-3" style="width:100%;">
+                            <span class="icon text-white-50">
+                                <i class="fas fa-boxes text-dark"></i>
+                            </span>
+                            <span class="text">Tambah Produk Baru</span>
+                        </a>
+                        <a href="{{ route('transaksi.create') }}" class="btn btn-warning btn-icon-split mb-3" style="width:100%;">
+                            <span class="icon text-white-50">
+                                <i class="fas fa-receipt text-dark"></i>
+                            </span>
+                            <span class="text">Buat Transaksi Baru</span>
+                        </a>
+                        <a href="{{ route('user-management.create') }}" class="btn btn-warning btn-icon-split mb-3" style="width:100%;">
+                            <span class="icon text-white-50">
+                                <i class="fas fa-user text-dark"></i>
+                            </span>
+                            <span class="text">Tambah User Baru</span>
+                        </a>
+                        <a href="{{ route('kategori.create') }}" class="btn btn-warning btn-icon-split" style="width:100%;">
+                            <span class="icon text-white-50">
+                                <i class="fas fa-tags text-dark"></i>
+                            </span>
+                            <span class="text">Tambah Kategori</span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 
 @section('scripts')
 <!-- Chart.js -->
@@ -225,6 +256,39 @@
                 }
             }
         }
+    });
+    
+    // Script untuk mendeteksi status sidebar
+    $(document).ready(function() {
+        // Cek status sidebar saat halaman dimuat
+        if ($('body').hasClass('sidebar-collapse')) {
+            $('.content-wrapper').css({
+                'margin-left': '0',
+                'width': '100%'
+            });
+        } else {
+            $('.content-wrapper').css({
+                'margin-left': '250px',
+                'width': 'calc(100% - 250px)'
+            });
+        }
+        
+        // Deteksi perubahan status sidebar
+        $('[data-widget="pushmenu"]').on('click', function() {
+            setTimeout(function() {
+                if ($('body').hasClass('sidebar-collapse')) {
+                    $('.content-wrapper').css({
+                        'margin-left': '0',
+                        'width': '100%'
+                    });
+                } else {
+                    $('.content-wrapper').css({
+                        'margin-left': '250px',
+                        'width': 'calc(100% - 250px)'
+                    });
+                }
+            }, 350); // Sesuai dengan durasi transisi sidebar
+        });
     });
 </script>
 @endsection

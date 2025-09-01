@@ -89,14 +89,18 @@ Route::controller(AuthController::class)->group(function () {
                 'destroy' => 'kategori.destroy'
             ]);
         
+        // route show secara manual
+        Route::get('/kategori/{id}', [KategoriController::class, 'show'])->name('kategori.show');
+
         // User Management
         Route::prefix('user-management')->name('user-management.')->group(function () {
-            Route::get('/', [UserManagementController::class, 'index'])->name('index');
-            Route::get('/create', [UserManagementController::class, 'create'])->name('create');
-            Route::post('/', [UserManagementController::class, 'store'])->name('store');
-            Route::get('/{user}/edit', [UserManagementController::class, 'edit'])->name('edit');
-            Route::put('/{user}', [UserManagementController::class, 'update'])->name('update');
-            Route::delete('/{user}', [UserManagementController::class, 'destroy'])->name('destroy');
+            Route::get('/user-management', [UserManagementController::class, 'index'])->name('index');
+            Route::get('/user-management/create', [UserManagementController::class, 'create'])->name('create');
+            Route::post('/user-management', [UserManagementController::class, 'store'])->name('store');
+            Route::get('/user-management/{user}', [UserManagementController::class, 'show'])->name('show');         // <-- ini yang hilang!
+            Route::get('/user-management/{user}/edit', [UserManagementController::class, 'edit'])->name('edit');   // gunakan {user} karena pakai type-hint User
+            Route::put('/user-management/{user}', [UserManagementController::class, 'update'])->name('update');
+            Route::delete('/user-management/{user}', [UserManagementController::class, 'destroy'])->name('destroy');
         });
         
         // Activity Log
@@ -114,7 +118,12 @@ Route::controller(AuthController::class)->group(function () {
             // Route khusus untuk pemasukan manual
             Route::get('/income/create', [FinancialReportController::class, 'createIncome'])->name('income.create');
             Route::post('/income', [FinancialReportController::class, 'storeIncome'])->name('income.store');
+
+            // ✅ Route BARU: tampilkan transaksi per tanggal
+            Route::get('/show', [FinancialReportController::class, 'showTransactionsByDate'])->name('show');
         });
+            // Route khusus untuk print semua data
+            Route::get('/financial-reports/print', [FinancialReportController::class, 'print'])->name('financial-reports.print');
     });
 });
 

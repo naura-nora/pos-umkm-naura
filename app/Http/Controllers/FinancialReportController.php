@@ -6,6 +6,7 @@ use App\Models\FinancialReport;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Carbon;
 
 class FinancialReportController extends Controller
 {
@@ -131,6 +132,65 @@ class FinancialReportController extends Controller
         return redirect()->route('financial-reports.index')
             ->with('success', 'Laporan berhasil diperbarui');
     }
+
+
+    
+
+    public function print()
+    {
+        // Ambil SEMUA data tanpa pagination
+        $transactionIncomes = Transaksi::selectRaw('DATE(tanggal) as report_date')
+            ->selectRaw('SUM(total) as amount')
+            ->selectRaw('COUNT(*) as total_items')
+            ->selectRaw('GROUP_CONCAT(DISTINCT nama_pelanggan SEPARATOR ", ") as cashiers')
+            ->join('users', 'transaksi.user_id', '=', 'users.id')
+            ->groupBy('report_date')
+            ->orderBy('report_date', 'desc')
+            ->get();
+
+        $manualIncomes = FinancialReport::where('type', 'income')
+            ->with('user')
+            ->orderBy('report_date', 'desc')
+            ->get(); // Semua data, tanpa paginate
+
+        $expenses = FinancialReport::where('type', 'expense')
+            ->with('user')
+            ->orderBy('report_date', 'desc')
+            ->get(); // Semua data
+
+        $totalIncome = $transactionIncomes->sum('amount') + $manualIncomes->sum('amount');
+        $totalExpense = $expenses->sum('amount');
+        $balance = $totalIncome - $totalExpense;
+
+        return view('financial_reports.print', compact(
+            'transactionIncomes',
+            'manualIncomes',
+            'expenses',
+            'totalIncome',
+            'totalExpense',
+            'balance'
+        ));
+    }
+
+
+    public function showTransactionsByDate(Request $request)
+{
+    $request->validate([
+        'date' => 'required|date',
+    ]);
+
+    $tanggal = $request->date;
+    $tanggalFormat = Carbon::parse($tanggal)->format('d M Y');
+
+    // Ambil semua transaksi di tanggal tersebut
+    $transaksi = Transaksi::with('user', 'detailTransaksi.produk')
+        ->whereDate('tanggal', $tanggal)
+        ->orderBy('tanggal', 'desc')
+        ->get();
+
+    return view('financial_reports.show', compact('transaksi', 'tanggalFormat', 'tanggal'));
+}
+
 
     /**
      * Remove the specified resource from storage.

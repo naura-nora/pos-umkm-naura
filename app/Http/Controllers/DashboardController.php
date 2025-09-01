@@ -81,7 +81,7 @@ class DashboardController extends Controller
                 'totalProduk' => Produk::count(),
                 
                 'transaksiTerakhir' => Transaksi::where('user_id', $user->id)
-                                      ->with('details.produk')
+                                      ->with('detailtransaksi.produk')
                                       ->orderBy('tanggal', 'desc')
                                       ->take(5)
                                       ->get(),

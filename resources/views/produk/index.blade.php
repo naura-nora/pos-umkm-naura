@@ -73,6 +73,9 @@
                             </td>
                             @if(auth()->user()->hasAnyRole(['admin']))
                             <td>
+                                <a href="{{ route('produk.show', $produk->id) }}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i>
+                                </a>
                                 <a href="{{ route('produk.edit', $produk->id) }}" class="btn btn-sm btn-warning">
                                     <i class="fas fa-edit"></i>
                                 </a>
@@ -97,7 +100,7 @@
 
             <!-- Pagination -->
             @if($produks->hasPages())
-            <div class="d-flex justify-content-center mt-3">
+            <div class="d-flex justify-content-start mt-3">
                 {{ $produks->links('pagination::bootstrap-4') }}
             </div>
             @endif

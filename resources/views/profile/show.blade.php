@@ -17,12 +17,15 @@
                 <div class="card-body text-center p-4">
                     <div class="profile-picture-container mx-auto mb-3 position-relative">
                         @if(Auth::user()->photo)
-                            <img src="{{ asset('storage/'.Auth::user()->photo) }}" alt="Foto profil" class="img-thumbnail rounded-circle profile-picture">
+                            <img src="{{ asset('adminlte/img/profile-photos/' . Auth::user()->photo) }}" 
+                                alt="Foto profil" 
+                                class="img-thumbnail rounded-circle profile-picture">
                         @else
                             <div class="profile-icon rounded-circle d-flex align-items-center justify-content-center">
                                 <i class="fas fa-user text-white"></i>
                             </div>
                         @endif
+
                         <button class="btn btn-sm btn-primary rounded-circle change-photo-btn" data-toggle="modal" data-target="#changePhotoModal" title="Ubah Foto">
                             <i class="fas fa-camera"></i>
                         </button>

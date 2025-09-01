@@ -101,7 +101,7 @@
             
             <!-- Pagination -->
             @if($transaksi->hasPages())
-            <div class="d-flex justify-content-center mt-3">
+            <div class="d-flex justify-start-center mt-3">
                 {{ $transaksi->onEachSide(1)->links('pagination::bootstrap-4') }}
             </div>
             @endif

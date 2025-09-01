@@ -22,7 +22,7 @@ class UserManagementController extends Controller
                         });
         })
         ->orderBy('created_at', 'desc')
-        ->paginate(10);
+        ->paginate(5);
     
     return view('user-management.index', compact('users'));
 }
@@ -52,7 +52,15 @@ class UserManagementController extends Controller
     $role = $request->role ?? 'pelanggan';
     $user->assignRole($role);
 
+    
+
     return redirect()->route('user-management.index')->with('success', 'User berhasil dibuat!');
+    }
+
+    public function show($id)
+    {
+        $user = User::findOrFail($id);
+        return view('user-management.show', compact('user'));
     }
 
     public function edit(User $user)
@@ -60,6 +68,7 @@ class UserManagementController extends Controller
         $roles = Role::all();
         return view('user-management.edit', compact('user', 'roles'));
     }
+    
 
     public function update(Request $request, User $user)
     {

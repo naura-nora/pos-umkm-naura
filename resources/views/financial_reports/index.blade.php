@@ -6,11 +6,14 @@
         <div class="card-header d-flex justify-content-between align-items-center text-white text-bold" style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);">
     <h3 class="mb-0 text-bold">Laporan Keuangan</h3>
     <div class="ml-auto d-flex"> <!-- Tambah ml-auto di sini -->
-        <div class="btn-rounded mr-2"> <!-- Jarak antar tombol 2 -->
+        <div class="btn-rounded mr-1"> <!-- Jarak antar tombol 2 -->
             <a href="{{ route('financial-reports.create') }}" class="btn btn-light text-dark btn-rounded">
                 <i class="fas fa-plus-circle mr-1"></i> Tambah Pemasukan / Pengeluaran
             </a>
         </div>
+        <a href="{{ route('financial-reports.print') }}" target="_blank" class="btn btn-light ml-2">
+            <i class="fas fa-print mr-1"></i> Cetak Semua Data
+        </a>
     </div>
 </div>
         
@@ -47,7 +50,7 @@
             <!-- Tabel Pemasukan dari Transaksi -->
             <div class="card mb-4">
                 <div class="card-header text-bold text-white" style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);>
-                    <h5 class="mb-0"><i class="fas fa-cash-register mr-2"></i>Pemasukan dari Transaksi</h5>
+                    <h5 class="mb-0"><i class="fas fa-receipt mr-2"></i>Pemasukan dari Transaksi</h5>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
@@ -72,8 +75,8 @@
                                     <td>{{ $transaction->cashiers }}</td>
                                     <td>
                                         <div class="d-flex gap-2">
-                                            <a href="{{ route('transaksi.index', ['date' => $transaction->report_date]) }}" 
-                                            class="btn btn-sm btn-warning" title="Detail">
+                                            <a href="{{ route('financial-reports.show', ['date' => $transaction->report_date]) }}" 
+                                            class="btn btn-sm btn-info" title="Lihat Transaksi Tanggal Ini">
                                                 <i class="fas fa-eye"></i>
                                             </a>
                                             @can('delete', App\Models\Transaksi::class)

@@ -116,7 +116,7 @@
             </div>
             
             <!-- Pagination -->
-            <div class="d-flex justify-content-center mt-3">
+            <div class="d-flex justify-content-start mt-3">
                 {{ $activities->appends(request()->query())->links('pagination::bootstrap-4') }}
             </div>
         </div>

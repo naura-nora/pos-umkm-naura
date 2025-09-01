@@ -67,16 +67,20 @@
                                            readonly
                                            id="password-{{ $user->id }}">
                                     <div class="input-group-append">
-                                        <button class="btn btn-outline-secondary toggle-password" 
+                                        <button class="btn toggle-password" 
                                                 type="button"
                                                 data-target="#password-{{ $user->id }}">
-                                            <i class="fas fa-eye"></i>
+                                            <!-- <i class="fas fa-eye"></i> -->
                                         </button>
                                     </div>
                                 </div>
                             </td>
                             <td>{{ $user->getRoleNames()->first() ?? 'Pelanggan' }}</td>
                             <td>
+                                <a href="{{ route('user-management.show', $user->id) }}" 
+                                   class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i>
+                                </a>
                                 <a href="{{ route('user-management.edit', $user->id) }}" 
                                    class="btn btn-sm btn-warning">
                                     <i class="fas fa-edit"></i>
@@ -103,7 +107,7 @@
             
             <!-- Pagination -->
             @if($users->hasPages())
-            <div class="d-flex justify-content-center mt-3">
+            <div class="d-flex justify-content-start mt-3">
                 {{ $users->links('pagination::bootstrap-4') }}
             </div>
             @endif

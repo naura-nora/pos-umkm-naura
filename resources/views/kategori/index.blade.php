@@ -61,6 +61,9 @@
                             <td>{{ $item->nama_kategori }}</td>
                             @if(auth()->user()->hasAnyRole(['admin']))
                             <td>
+                                <a href="{{ route('kategori.show', $item->id) }}" class="btn btn-sm btn-info" title="Lihat Produk">
+                                    <i class="fas fa-eye"></i>
+                                </a>
                                 <a href="{{ route('kategori.edit', $item->id) }}" class="btn btn-sm btn-warning">
                                     <i class="fas fa-edit"></i>
                                 </a>
@@ -86,7 +89,7 @@
             </div>
 
             @if($kategori->hasPages())
-            <div class="d-flex justify-content-center mt-3">
+            <div class="d-flex justify-content-start mt-3">
                 {{ $kategori->links('pagination::bootstrap-4') }}
             </div>
             @endif

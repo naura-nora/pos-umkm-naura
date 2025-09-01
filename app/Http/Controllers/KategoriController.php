@@ -23,7 +23,7 @@ class KategoriController extends Controller
                 return $query->where('nama_kategori', 'like', '%'.$search.'%');
             })
             ->orderBy('created_at', 'desc')
-            ->paginate(7);
+            ->paginate(5);
         
         return view('kategori.index', compact('kategori'));
     }
@@ -57,7 +57,9 @@ class KategoriController extends Controller
 
     public function show(string $id)
     {
-        abort(404);
+        $kategori = Kategori::with('produk')->findOrFail($id);
+
+        return view('kategori.show', compact('kategori'));
     }
 
     public function edit(string $id)

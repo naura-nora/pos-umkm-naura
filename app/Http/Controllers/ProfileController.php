@@ -47,27 +47,24 @@ class ProfileController extends Controller
         return view('profile.change-password');
     }
 
-
     public function updatePhoto(Request $request)
 {
     $request->validate([
-        'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+        'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
     ]);
 
     if ($request->hasFile('photo')) {
-        // Hapus foto lama jika ada
-        if (auth()->user()->photo && Storage::exists('public/'.auth()->user()->photo)) {
-            Storage::delete('public/'.auth()->user()->photo);
-        }
-        
-        // Simpan foto baru
-        $path = $request->file('photo')->store('profile-photos', 'public');
-        
-        // Update path foto di database
-        auth()->user()->update(['photo' => $path]);
+        // bikin nama file unik
+        $filename = time() . '.' . $request->photo->extension();
+
+        // simpan ke public/adminlte/img/profile-photos
+        $request->photo->move(public_path('adminlte/img/profile-photos'), $filename);
+
+        // update database → hanya simpan nama file
+        auth()->user()->update(['photo' => $filename]);
     }
 
-    return back()->with('success', 'Foto profil berhasil diperbarui!');
+    return redirect()->back()->with('success', 'Foto profil berhasil diperbarui.');
 }
 
     public function updatePassword(Request $request)

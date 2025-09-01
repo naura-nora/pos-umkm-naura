@@ -67,8 +67,8 @@
             </div>
 
             <div class="card">
-                <div class="card-header bg-warning">
-                    <h3 class="card-title">Detail Pembelian</h3>
+                <div class="card-header" style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);">
+                    <h3 class="card-title text-white">Detail Pembelian</h3>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
