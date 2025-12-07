@@ -22,7 +22,7 @@
 
     <!-- Footer -->
     <footer class="main-footer text-center">
-        <strong>POS UMKM &copy; {{ date('Y') }}</strong>
+        <strong>TOKO PAK B &copy; {{ date('Y') }}</strong>
     </footer>
 </div>
 

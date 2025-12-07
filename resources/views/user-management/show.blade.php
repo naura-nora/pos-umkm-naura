@@ -4,9 +4,7 @@
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>Detail User {{ $user->id }}</h1>
-                </div>
+        
             </div>
         </div>
     </section>
@@ -38,6 +36,12 @@
                                                     <th width="30%">ID</th>
                                                     <td>{{ $user->id }}</td>
                                                 </tr>
+                                                @if($user->hasRole('pelanggan'))
+                                                    <tr>
+                                                        <th>Kode Pelanggan</th>
+                                                        <td>{{ $user->kode_pelanggan ?? '-' }}</td>
+                                                    </tr>
+                                                @endif
                                                 <tr>
                                                     <th>Nama User</th>
                                                     <td>{{ $user->name }}</td>

@@ -5,9 +5,9 @@
     <div class="card">
         <div class="card-header text-light text-bold" style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);">
             <div class="d-flex justify-content-between align-items-center">
-                <h3 class="card-title">Detail Transaksi {{ $transaksi->kode }}</h3>
+                <h3 class="card-title">Detail Retur {{ $retur->transaksi->kode ?? '-' }}</h3>
                 <div>
-                    <a href="{{ route('transaksi.index') }}" class="btn btn-light btn-sm">
+                    <a href="{{ route('retur.index') }}" class="btn btn-light btn-sm">
                         <i class="fas fa-arrow-left mr-1"></i> Kembali
                     </a>
                     <button onclick="window.print()" class="btn btn-light btn-sm ml-2">
@@ -21,27 +21,39 @@
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-header bg-warning">
-                            <h3 class="card-title">Informasi Transaksi</h3>
+                            <h3 class="card-title">Informasi Retur</h3>
                         </div>
                         <div class="card-body p-0">
                             <table class="table table-bordered">
                                 <tr>
-                                    <th width="30%">Kode</th>
-                                    <td>{{ $transaksi->kode }}</td>
+                                    <th width="30%">ID Retur</th>
+                                    <td>{{ $retur->id }}</td>
                                 </tr>
                                 <tr>
                                     <th>Tanggal</th>
-                                    <td>{{ $transaksi->tanggal->format('d/m/Y') }}</td>
+                                    <td>{{ $retur->created_at->format('d/m/Y') }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Kasir</th>
-                                    <td>{{ $transaksi->user->name }}</td>
+                                    <th>Diajukan Oleh</th>
+                                    <td>{{ $retur->user->name ?? '-' }}</td>
                                 </tr>
                                 <tr>
                                     <th>Status</th>
                                     <td>
-                                        <span class="badge {{ $transaksi->status === 'Lunas' ? 'bg-success' : 'bg-warning' }}">
-                                            {{ $transaksi->status }}
+                                        @php
+                                            $statusBadge = [
+                                                'pending' => 'bg-warning',
+                                                'approved' => 'bg-success',
+                                                'rejected' => 'bg-danger'
+                                            ];
+                                            $statusText = [
+                                                'pending' => 'Menunggu',
+                                                'approved' => 'Disetujui',
+                                                'rejected' => 'Ditolak'
+                                            ];
+                                        @endphp
+                                        <span class="badge {{ $statusBadge[$retur->status] ?? 'bg-secondary' }}">
+                                            {{ $statusText[$retur->status] ?? $retur->status }}
                                         </span>
                                     </td>
                                 </tr>
@@ -52,43 +64,29 @@
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-header bg-warning">
-                            <h3 class="card-title">Informasi Pelanggan</h3>
+                            <h3 class="card-title">Informasi Transaksi</h3>
                         </div>
                         <div class="card-body p-0">
                             <table class="table table-bordered">
                                 <tr>
-                                    <th width="30%">Nama</th>
-                                    <td>{{ $transaksi->nama_pelanggan ?: '-' }}</td>
+                                    <th width="30%">Kode</th>
+                                    <td>{{ $retur->transaksi->kode ?? '-' }}</td>
                                 </tr>
-                                <!-- <tr>
-                                    <th>Kode Pelanggan</th>
+                                <tr>
+                                    <th>Pelanggan</th>
+                                    <td>{{ $retur->transaksi->nama_pelanggan ?? '-' }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <td>{{ $retur->transaksi->tanggal->format('d/m/Y') ?? '-' }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Status</th>
                                     <td>
-                                        @if($transaksi->pelanggan && $transaksi->pelanggan->kode_pelanggan)
-                                            {{ $transaksi->pelanggan->kode_pelanggan }}
-                                        @else
-                                            -
-                                        @endif
+                                        <span class="badge {{ $retur->transaksi->status === 'Lunas' ? 'bg-success' : 'bg-warning' }}">
+                                            {{ $retur->transaksi->status }}
+                                        </span>
                                     </td>
-                                </tr> -->
-
-                                <tr>
-                                    <th>Kode Pelanggan</th>
-                                    <td>
-                                        @if($pelanggan && $pelanggan->kode_pelanggan)
-                                            {{ $pelanggan->kode_pelanggan }}
-                                        @else
-                                            -
-                                        @endif
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <th>Nomor Telpon</th>
-                                    <td>{{ $transaksi->nomor_telepon ?: '-' }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Pembayaran</th>
-                                    <td>{{ $transaksi->metode_pembayaran }}</td>
                                 </tr>
                             </table>
                         </div>
@@ -98,38 +96,34 @@
 
             <div class="card">
                 <div class="card-header" style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);">
-                    <h3 class="card-title text-white">Detail Pembelian</h3>
+                    <h3 class="card-title text-white">Detail Retur</h3>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table table-bordered">
                             <thead class="bg-secondary">
-                                <!-- <tr class="text-light" style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);"> -->
+                                <tr>
                                     <th width="5%">No</th>
                                     <th width="15%">Gambar</th>
                                     <th>Produk</th>
                                     <th>Kategori</th>
-                                    <th width="15%">Harga</th>
-                                    <th width="10%">Qty</th>
-                                    <th width="20%">Subtotal</th>
-                                <!-- </tr> -->
+                                    <th width="15%">Harga Satuan</th>
+                                    <th width="10%">Qty Retur</th>
+                                    <th width="20%">Total Retur</th>
+                                </tr>
                             </thead>
                             <tbody>
-                                @forelse($transaksi->detailTransaksi as $item)
                                 <tr>
-                                    <td>{{ $loop->iteration }}</td>
+                                    <td>1</td>
                                     <td class="text-center">
-                                        @if($item->produk && $item->produk->gambar_produk)
+                                        @if($retur->produk && $retur->produk->gambar_produk)
                                             @php
-                                                // Path gambar di public/adminlte/img
-                                                $gambarPath = 'adminlte/img/' . $item->produk->gambar_produk;
-                                                // Path lengkap untuk pengecekan
+                                                $gambarPath = 'adminlte/img/' . $retur->produk->gambar_produk;
                                                 $fullPath = public_path($gambarPath);
                                             @endphp
-                                            
                                             @if(file_exists($fullPath))
                                                 <img src="{{ asset($gambarPath) }}" 
-                                                    alt="{{ $item->produk->nama_produk }}" 
+                                                    alt="{{ $retur->produk->nama_produk }}" 
                                                     class="img-thumbnail" 
                                                     style="max-height: 100px; max-width: 100px;">
                                             @else
@@ -137,7 +131,6 @@
                                                     alt="Gambar tidak ditemukan" 
                                                     class="img-thumbnail" 
                                                     style="max-height: 100px; max-width: 100px;">
-                                                <div class="text-danger small">File tidak ada: {{ $item->produk->gambar_produk }}</div>
                                             @endif
                                         @else
                                             <img src="{{ asset('adminlte/img/default-product.png') }}" 
@@ -146,40 +139,42 @@
                                                 style="max-height: 100px; max-width: 100px;">
                                         @endif
                                     </td>
-                                    <td>{{ $item->produk->nama_produk ?? 'Produk dihapus' }}</td>
+                                    <td>{{ $retur->produk->nama_produk ?? 'Produk dihapus' }}</td>
                                     <td>
-                                        @if($item->produk && $item->produk->kategori)
-                                            {{ $item->produk->kategori->nama_kategori }}
+                                        @if($retur->produk && $retur->produk->kategori)
+                                            {{ $retur->produk->kategori->nama_kategori }}
                                         @else
                                             -
                                         @endif
                                     </td>
-                                    <td class="text-right">Rp {{ number_format($item->harga, 0, ',', '.') }}</td>
-                                    <td class="text-center">{{ $item->qty }}</td>
-                                    <td class="text-right">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
+                                    <td class="text-right">
+                                        @if($retur->produk)
+                                            Rp {{ number_format($retur->produk->harga_produk, 0, ',', '.') }}
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+                                    <td class="text-center">{{ $retur->qty }}</td>
+                                    <td class="text-right">
+                                        @if($retur->produk)
+                                            Rp {{ number_format($retur->produk->harga_produk * $retur->qty, 0, ',', '.') }}
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
                                 </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="7" class="text-center">Tidak ada item</td>
-                                </tr>
-                                @endforelse
                             </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th colspan="6" class="text-right">Total</th>
-                                    <th class="text-right">Rp {{ number_format($transaksi->total, 0, ',', '.') }}</th>
-                                </tr>
-                                <tr>
-                                    <th colspan="6" class="text-right">Bayar</th>
-                                    <th class="text-right">Rp {{ number_format($transaksi->bayar, 0, ',', '.') }}</th>
-                                </tr>
-                                <tr>
-                                    <th colspan="6" class="text-right">Kembalian</th>
-                                    <th class="text-right">Rp {{ number_format($transaksi->kembalian, 0, ',', '.') }}</th>
-                                </tr>
-                            </tfoot>
                         </table>
                     </div>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header bg-info" style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);">
+                    <h3 class="card-title text-white">Alasan Retur</h3>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">{{ $retur->alasan }}</p>
                 </div>
             </div>
 

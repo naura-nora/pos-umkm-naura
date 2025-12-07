@@ -12,17 +12,59 @@
                         @csrf
 
                         <!-- Informasi Pelanggan -->
-                        <div class="form-group row">
-                            <label for="nama_pelanggan" class="col-md-4 col-form-label text-md-right">Nama Pelanggan</label>
-                            <div class="col-md-6">
-                                <input id="nama_pelanggan" type="text" class="form-control @error('nama_pelanggan') is-invalid @enderror" name="nama_pelanggan" required autofocus>
-                                @error('nama_pelanggan')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                            <div class="form-group row">
+                                <label for="nama_pelanggan" class="col-md-4 col-form-label text-md-right">Nama Pelanggan</label>
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <!-- INPUT BIASA (BUKAN SELECT) -->
+                                        <input type="text" id="nama_pelanggan" 
+                                            class="form-control @error('nama_pelanggan') is-invalid @enderror" 
+                                            name="nama_pelanggan" 
+                                            placeholder="Klik tombol cari untuk memilih pelanggan"
+                                            value="{{ old('nama_pelanggan') }}"
+                                            required autofocus readonly>
+                                        
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary" type="button" 
+                                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="fas fa-search"></i>
+                                            </button>
+                                            <div class="dropdown-menu dropdown-menu-right" style="min-width: 350px; padding: 10px;">
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" 
+                                                        placeholder="Cari nama pelanggan" id="searchPelanggan">
+                                                </div>
+                                                <div id="pelangganList" style="max-height: 250px; overflow-y: auto;">
+                                                    @foreach($pelanggans as $pelanggan)
+                                                        <a class="dropdown-item" href="#" 
+                                                        data-value="{{ $pelanggan->name }}"
+                                                        style="padding: 8px 12px; border-bottom: 1px solid #eee;">
+                                                            <div>
+                                                                <strong>{{ $pelanggan->name }}</strong>
+                                                                <br>
+                                                                <!-- <small class="text-muted">ID: {{ $pelanggan->id }}</small> -->
+                                                                @if($pelanggan->kode_pelanggan)
+                                                                    <small class="text-muted">Kode: {{ $pelanggan->kode_pelanggan }}</small>
+                                                                @else
+                                                                    <small class="text-muted text-danger">Kode belum tersedia</small>
+                                                                @endif
+                                                            </div>
+                                                        </a>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+        
+                                    
+                                    @error('nama_pelanggan')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
                             </div>
-                        </div>
 
                         <!-- Tanggal Transaksi -->
                         <div class="form-group row">
@@ -43,20 +85,52 @@
                             <div class="card-header">Tambah Produk</div>
                             <div class="card-body">
                                 <div class="form-group row">
-                                    <label for="produk_id" class="col-md-4 col-form-label text-md-right">Produk</label>
+                                    <label for="produk_input" class="col-md-4 col-form-label text-md-right">Produk</label>
                                     <div class="col-md-6">
-                                        <select id="produk_id" class="form-control">
-                                            <option value="">Pilih Produk</option>
-                                            @foreach($produks as $produk)
-                                                <option value="{{ $produk->id }}" 
-                                                        data-kategori="{{ $produk->kategori->nama_kategori ?? 'Tidak ada kategori' }}" 
-                                                        data-harga="{{ $produk->harga_produk }}"
-                                                        data-stok="{{ $produk->stok_produk }}"
-                                                        data-nama="{{ $produk->nama_produk }}">
-                                                    {{ $produk->nama_produk }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                        <div class="input-group">
+                                            <!-- INPUT BIASA UNTUK PRODUK -->
+                                            <input type="text" id="produk_input" 
+                                                class="form-control" 
+                                                placeholder="Klik tombol cari untuk memilih produk"
+                                                readonly>
+                                            
+                                            <!-- Hidden input untuk menyimpan ID produk -->
+                                            <input type="hidden" id="produk_id" name="produk_id">
+                                            
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-secondary" type="button" 
+                                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <i class="fas fa-search"></i>
+                                                </button>
+                                                <div class="dropdown-menu dropdown-menu-right" style="min-width: 400px; padding: 10px;">
+                                                    <div class="form-group">
+                                                        <input type="text" class="form-control" 
+                                                            placeholder="Cari nama produk..." id="searchProduk">
+                                                    </div>
+                                                    <div id="produkDropdownList" style="max-height: 250px; overflow-y: auto;">
+                                                        @foreach($produks as $produk)
+                                                            <a class="dropdown-item" href="#" 
+                                                            data-id="{{ $produk->id }}"
+                                                            data-nama="{{ $produk->nama_produk }}"
+                                                            data-kategori="{{ $produk->kategori->nama_kategori ?? 'Tidak ada kategori' }}"
+                                                            data-harga="{{ $produk->harga_produk }}"
+                                                            data-stok="{{ $produk->stok_produk }}"
+                                                            style="padding: 8px 12px; border-bottom: 1px solid #eee;">
+                                                                <div>
+                                                                    <strong>{{ $produk->nama_produk }}</strong>
+                                                                    <br>
+                                                                    <small class="text-muted">
+                                                                        Kategori: {{ $produk->kategori->nama_kategori ?? 'Tidak ada kategori' }} | 
+                                                                        Harga: Rp {{ number_format($produk->harga_produk, 0, ',', '.') }} | 
+                                                                        Stok: {{ $produk->stok_produk }}
+                                                                    </small>
+                                                                </div>
+                                                            </a>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -126,6 +200,26 @@
                         </div>
 
                         <!-- Informasi Pembayaran -->
+                        <!-- Metode Pembayaran -->
+                        <div class="form-group row">
+                            <label for="metode_pembayaran" class="col-md-4 col-form-label text-md-right">Metode Pembayaran</label>
+                            <div class="col-md-6">
+                                <select id="metode_pembayaran" class="form-control @error('metode_pembayaran') is-invalid @enderror" name="metode_pembayaran" required>
+                                    <option value="">Pilih Metode Pembayaran</option>
+                                    <option value="cash" {{ old('metode_pembayaran') == 'cash' ? 'selected' : '' }}>Cash</option>
+                                    <option value="qris" {{ old('metode_pembayaran') == 'qris' ? 'selected' : '' }}>QRIS</option>
+                                    <option value="debit" {{ old('metode_pembayaran') == 'debit' ? 'selected' : '' }}>Debit</option>
+                                </select>
+                                @error('metode_pembayaran')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        
+                        <!-- Jumlah Bayar -->
                         <div class="form-group row mt-4">
                             <label for="bayar" class="col-md-4 col-form-label text-md-right">Jumlah Bayar</label>
                             <div class="col-md-6">
@@ -135,6 +229,22 @@
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
+                            </div>
+                        </div>
+
+                        <!-- Nomor Telepon -->
+                        <div class="form-group row" id="nomor_telepon_container" style="display: none;">
+                            <label for="nomor_telepon" class="col-md-4 col-form-label text-md-right">Nomor Telepon</label>
+                            <div class="col-md-6">
+                                <input id="nomor_telepon" type="text" class="form-control @error('nomor_telepon') is-invalid @enderror" 
+                                    name="nomor_telepon" value="{{ old('nomor_telepon') }}" 
+                                    placeholder="Masukkan nomor telepon">
+                                @error('nomor_telepon')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                                <small class="form-text text-muted">*Wajib diisi untuk pembayaran QRIS dan Debit</small>
                             </div>
                         </div>
 
@@ -167,75 +277,148 @@
 </div>
 
 <script>
-    
 document.addEventListener('DOMContentLoaded', function() {
-    const produkSelect = document.getElementById('produk_id');
+    // ====== VARIABEL GLOBAL ======
+    const namaPelangganInput = document.getElementById('nama_pelanggan');
+    const searchPelangganInput = document.getElementById('searchPelanggan');
+    const pelangganItems = document.querySelectorAll('#pelangganList .dropdown-item');
+
+    const produkInput = document.getElementById('produk_input');
+    const produkIdInput = document.getElementById('produk_id');
+    const searchProdukInput = document.getElementById('searchProduk');
+    const produkItems = document.querySelectorAll('#produkDropdownList .dropdown-item');
     const kategoriInput = document.getElementById('kategori');
     const hargaSatuanInput = document.getElementById('harga_satuan');
     const stokInput = document.getElementById('stok');
-    const qtyInput = document.getElementById('qty');
     const maxQtySpan = document.getElementById('max-qty');
+    const qtyInput = document.getElementById('qty');
     const tambahProdukBtn = document.getElementById('tambahProdukBtn');
     const produkTable = document.getElementById('produkTable').getElementsByTagName('tbody')[0];
     const totalHargaEl = document.getElementById('totalHarga');
     const bayarInput = document.getElementById('bayar');
     const kembalianInput = document.getElementById('kembalian');
     const produkInputsContainer = document.getElementById('produkInputsContainer');
-    
+    const metodePembayaran = document.getElementById('metode_pembayaran');
+    const nomorTeleponContainer = document.getElementById('nomor_telepon_container');
+    const nomorTeleponInput = document.getElementById('nomor_telepon');
+
     let produkList = [];
     let totalHarga = 0;
 
-    // Auto fill ketika produk dipilih
-    produkSelect.addEventListener('change', function() {
-        const selectedOption = this.options[this.selectedIndex];
-        
-        // Isi data otomatis
-        kategoriInput.value = selectedOption.dataset.kategori || 'Tidak ada kategori';
-        hargaSatuanInput.value = selectedOption.dataset.harga || '0';
-        stokInput.value = selectedOption.dataset.stok || '0';
-        
-        // Update maksimal quantity
-        maxQtySpan.textContent = selectedOption.dataset.stok || '0';
-        qtyInput.max = selectedOption.dataset.stok || '';
-        qtyInput.value = 1; // Reset ke 1 setiap ganti produk
+    // ====== FITUR CARI PELANGGAN ======
+    if (searchPelangganInput) {
+        searchPelangganInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            pelangganItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(searchTerm) ? 'block' : 'none';
+            });
+        });
+    }
+
+    pelangganItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const selectedValue = this.getAttribute('data-value');
+            namaPelangganInput.value = selectedValue;
+            $(this).closest('.dropdown-menu').prev().dropdown('toggle');
+            if (searchPelangganInput) searchPelangganInput.value = '';
+            pelangganItems.forEach(item => item.style.display = 'block');
+        });
     });
 
-    // Tambah produk ke tabel
+    // ====== FITUR CARI PRODUK ======
+    if (searchProdukInput) {
+        searchProdukInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            produkItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(searchTerm) ? 'block' : 'none';
+            });
+        });
+    }
+
+    produkItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const produkId = this.getAttribute('data-id');
+            const produkNama = this.getAttribute('data-nama');
+            const produkKategori = this.getAttribute('data-kategori');
+            const produkHarga = this.getAttribute('data-harga');
+            const produkStok = this.getAttribute('data-stok');
+
+            produkInput.value = produkNama;
+            produkIdInput.value = produkId;
+            kategoriInput.value = produkKategori;
+            hargaSatuanInput.value = produkHarga;
+            stokInput.value = produkStok;
+            maxQtySpan.textContent = produkStok;
+            qtyInput.max = produkStok;
+            qtyInput.value = 1;
+
+            $(this).closest('.dropdown-menu').prev().dropdown('toggle');
+            if (searchProdukInput) searchProdukInput.value = '';
+            produkItems.forEach(item => item.style.display = 'block');
+        });
+    });
+
+    // ====== RESET FORM PRODUK ======
+    function resetProdukForm() {
+        produkInput.value = '';
+        produkIdInput.value = '';
+        kategoriInput.value = '';
+        hargaSatuanInput.value = '';
+        stokInput.value = '';
+        maxQtySpan.textContent = '0';
+        qtyInput.value = 1;
+        qtyInput.max = '';
+    }
+
+    // ====== TAMBAH PRODUK KE TABEL ======
     tambahProdukBtn.addEventListener('click', function() {
-        const selectedOption = produkSelect.options[produkSelect.selectedIndex];
-        const produkId = produkSelect.value;
-        const namaProduk = selectedOption.dataset.nama || '';
-        const kategori = selectedOption.dataset.kategori || 'Tidak ada kategori';
-        const hargaSatuan = parseFloat(selectedOption.dataset.harga) || 0;
-        const stok = parseInt(selectedOption.dataset.stok) || 0;
+        const produkId = produkIdInput.value;
+        const namaProduk = produkInput.value;
+        const kategori = kategoriInput.value;
+        const hargaSatuan = parseFloat(hargaSatuanInput.value) || 0;
+        const stok = parseInt(stokInput.value) || 0;
         const qty = parseInt(qtyInput.value) || 0;
-        
-        // Validasi
+
         if (!produkId) {
-            alert('Pilih produk terlebih dahulu');
+            Swal.fire({
+                icon: 'error',
+                title: 'Pilih Produk',
+                text: 'Silakan pilih produk terlebih dahulu.',
+                confirmButtonColor: '#3085d6',
+            });
             return;
         }
-        
+
         if (qty < 1) {
-            alert('Jumlah tidak valid');
+            Swal.fire({
+                icon: 'error',
+                title: 'Jumlah Tidak Valid',
+                text: 'Jumlah minimal 1.',
+                confirmButtonColor: '#3085d6',
+            });
             return;
         }
-        
+
         if (qty > stok) {
-            alert('Jumlah melebihi stok tersedia');
+            Swal.fire({
+                icon: 'error',
+                title: 'Stok Tidak Cukup',
+                text: `Stok hanya tersedia ${stok}.`,
+                confirmButtonColor: '#3085d6',
+            });
             return;
         }
-        
-        // Cek apakah produk sudah ada di list
-        const existingProdukIndex = produkList.findIndex(p => p.id === produkId);
-        
-        if (existingProdukIndex >= 0) {
-            // Update jumlah jika produk sudah ada
-            produkList[existingProdukIndex].qty += qty;
-            produkList[existingProdukIndex].subtotal = produkList[existingProdukIndex].qty * hargaSatuan;
+
+        const existingIndex = produkList.findIndex(p => p.id === produkId);
+
+        if (existingIndex >= 0) {
+            produkList[existingIndex].qty += qty;
+            produkList[existingIndex].subtotal = produkList[existingIndex].qty * hargaSatuan;
         } else {
-            // Tambahkan produk baru ke list
-            
             produkList.push({
                 id: produkId,
                 nama: namaProduk,
@@ -245,39 +428,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 subtotal: qty * hargaSatuan
             });
         }
-        
-        // Update tampilan tabel
+
         updateProdukTable();
-        
-        // Reset form
-        produkSelect.value = '';
-        kategoriInput.value = '';
-        hargaSatuanInput.value = '';
-        stokInput.value = '';
-        qtyInput.value = 1;
-        maxQtySpan.textContent = '0';
+        resetProdukForm();
     });
 
-    // Update tabel produk
+    // ====== UPDATE TABEL PRODUK ======
     function updateProdukTable() {
-        // Kosongkan tabel
         produkTable.innerHTML = '';
-        
-        // Hitung total harga
         totalHarga = 0;
-        
-        // Tambahkan setiap produk ke tabel
+
         produkList.forEach((produk, index) => {
             totalHarga += produk.subtotal;
-            
             const row = produkTable.insertRow();
-            
             row.innerHTML = `
                 <td>${produk.nama}</td>
                 <td>${produk.kategori}</td>
-                <td>${formatRupiah(produk.harga)}</td>
+                <td>Rp ${formatRupiah(produk.harga)}</td>
                 <td>${produk.qty}</td>
-                <td>${formatRupiah(produk.subtotal)}</td>
+                <td>Rp ${formatRupiah(produk.subtotal)}</td>
                 <td>
                     <button type="button" class="btn btn-sm btn-danger hapusProdukBtn" data-index="${index}">
                         Hapus
@@ -285,20 +454,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 </td>
             `;
         });
-        
-        // Update total harga
-        totalHargaEl.textContent = formatRupiah(totalHarga);
-        
-        // Update kembalian jika sudah ada nilai bayar
-        if (bayarInput.value) {
-            updateKembalian();
-        }
-        
-        // Update input tersembunyi untuk form submission
+
+        totalHargaEl.textContent = `Rp ${formatRupiah(totalHarga)}`;
+        updateKembalian();
         updateProdukInputs();
     }
 
-    // Hapus produk dari tabel
+    // ====== HAPUS PRODUK ======
     document.addEventListener('click', function(e) {
         if (e.target.classList.contains('hapusProdukBtn')) {
             const index = parseInt(e.target.dataset.index);
@@ -307,25 +469,28 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Hitung kembalian ketika bayar berubah
-    bayarInput.addEventListener('input', updateKembalian);
-    
-    function updateKembalian() {
-        const bayar = parseFloat(bayarInput.value) || 0;
-        kembalianInput.value = bayar - totalHarga;
-    }
-
-    // Format angka ke format Rupiah
+    // ====== FORMAT RUPIAH ======
     function formatRupiah(angka) {
-        return 'Rp ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 
-    // Update input tersembunyi untuk form submission
+    // ====== UPDATE KEMBALIAN ======
+    function updateKembalian() {
+        const metode = metodePembayaran.value;
+        if (metode === 'qris' || metode === 'debit') {
+            kembalianInput.value = '-';
+        } else {
+            const bayar = parseFloat(bayarInput.value) || 0;
+            kembalianInput.value = bayar - totalHarga;
+        }
+    }
+
+    bayarInput.addEventListener('input', updateKembalian);
+
+    // ====== UPDATE INPUT HIDDEN UNTUK SUBMIT ======
     function updateProdukInputs() {
-        // Kosongkan container
         produkInputsContainer.innerHTML = '';
-        
-        // Tambahkan input tersembunyi untuk setiap produk
+
         produkList.forEach((produk, index) => {
             produkInputsContainer.innerHTML += `
                 <input type="hidden" name="produk[${index}][id]" value="${produk.id}">
@@ -334,35 +499,91 @@ document.addEventListener('DOMContentLoaded', function() {
                 <input type="hidden" name="produk[${index}][subtotal]" value="${produk.subtotal}">
             `;
         });
-        
-        document.querySelector('form').addEventListener('submit', async function(e) {
+
+        produkInputsContainer.innerHTML += `
+            <input type="hidden" name="total_harga" value="${totalHarga}">
+        `;
+    }
+
+    // ====== TOGGLE METODE PEMBAYARAN ======
+    function toggleMetodePembayaran() {
+        const metode = metodePembayaran.value;
+
+        if (metode === 'qris' || metode === 'debit') {
+            // Tampilkan nomor telepon
+            nomorTeleponContainer.style.display = 'flex';
+            nomorTeleponInput.setAttribute('required', 'required');
+
+            // Set bayar = total, kembalian = -
+            bayarInput.value = totalHarga;
+            bayarInput.readOnly = true;
+            kembalianInput.value = '-';
+        } else {
+            // Sembunyikan nomor telepon
+            nomorTeleponContainer.style.display = 'none';
+            nomorTeleponInput.removeAttribute('required');
+            nomorTeleponInput.value = '';
+
+            // Reset bayar & kembalian
+            bayarInput.value = '';
+            bayarInput.readOnly = false;
+            kembalianInput.value = '';
+        }
+    }
+
+    // Trigger saat load
+    toggleMetodePembayaran();
+
+    // Trigger saat berubah
+    metodePembayaran.addEventListener('change', toggleMetodePembayaran);
+
+    // ====== VALIDASI & SUBMIT FORM ======
+    document.querySelector('form').addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        // Validasi: minimal 1 produk
-        if (produkList.length === 0) {
-            await Swal.fire({
+        if (!namaPelangganInput.value) {
+            Swal.fire({
                 icon: 'error',
-                title: 'Oops...',
-                text: 'Tambahkan minimal 1 produk!',
+                title: 'Pelanggan Belum Dipilih',
+                text: 'Silakan pilih pelanggan terlebih dahulu.',
                 confirmButtonColor: '#3085d6',
             });
             return;
         }
 
-        const total = totalHarga;
-        const bayar = parseFloat(bayarInput.value) || 0;
+        if (produkList.length === 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Tidak Ada Produk',
+                text: 'Tambahkan minimal 1 produk.',
+                confirmButtonColor: '#3085d6',
+            });
+            return;
+        }
 
-        // Tentukan status berdasarkan pembayaran
-        const status = bayar >= total ? 'Lunas' : 'Belum Lunas';
-        
-        // Tampilkan konfirmasi jika status Belum Lunas
+        const metode = metodePembayaran.value;
+        const nomorTelepon = nomorTeleponInput.value;
+
+        if ((metode === 'qris' || metode === 'debit') && !nomorTelepon) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Nomor Telepon Wajib',
+                text: 'Untuk QRIS/Debit, nomor telepon harus diisi.',
+                confirmButtonColor: '#3085d6',
+            });
+            nomorTeleponInput.focus();
+            return;
+        }
+
+        const bayar = parseFloat(bayarInput.value) || 0;
+        const status = bayar >= totalHarga ? 'Lunas' : 'Belum Lunas';
+
         if (status === 'Belum Lunas') {
-            const kekurangan = total - bayar;
             const result = await Swal.fire({
                 title: 'Pembayaran Kurang!',
                 html: `
                     <p>Transaksi akan disimpan dengan status <strong>Belum Lunas</strong></p>
-                    <p>Kekurangan pembayaran: <b>${formatRupiah(kekurangan)}</b></p>
+                    <p>Kekurangan: <b>Rp ${formatRupiah(totalHarga - bayar)}</b></p>
                 `,
                 icon: 'warning',
                 showCancelButton: true,
@@ -374,36 +595,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 focusCancel: true
             });
 
-            if (!result.isConfirmed) {
-                return;
-            }
+            if (!result.isConfirmed) return;
         }
 
-        // Tambahkan input status
+        // Tambahkan input hidden
         const statusInput = document.createElement('input');
         statusInput.type = 'hidden';
         statusInput.name = 'status';
         statusInput.value = status;
         this.appendChild(statusInput);
 
-        // Tambahkan input total_harga
         const totalInput = document.createElement('input');
         totalInput.type = 'hidden';
         totalInput.name = 'total_harga';
-        totalInput.value = total;
+        totalInput.value = totalHarga;
         this.appendChild(totalInput);
 
-        // Tampilkan loading
+        // Kirim form
         Swal.fire({
-            title: 'Menyimpan Transaksi...',
+            title: 'Menyimpan...',
             html: 'Sedang memproses data transaksi.',
             allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
+            didOpen: () => Swal.showLoading()
         });
 
-        // Kirim form
         try {
             const formData = new FormData(this);
             const response = await fetch(this.action, {
@@ -411,7 +626,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: formData,
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json',
+                    'Accept': 'application/json'
                 }
             });
 
@@ -427,7 +642,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     window.location.href = data.redirect_url;
                 });
             } else {
-                throw new Error(data.message || 'Terjadi kesalahan saat menyimpan.');
+                throw new Error(data.message || 'Terjadi kesalahan.');
             }
         } catch (error) {
             Swal.fire({
@@ -438,12 +653,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
-
-        // Tambahkan input tersembunyi untuk total
-        produkInputsContainer.innerHTML += `
-            <input type="hidden" name="total_harga" value="${totalHarga}">
-        `;
-    }
 });
 </script>
 @endsection

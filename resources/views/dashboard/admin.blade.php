@@ -55,6 +55,59 @@
             background-color: #f8f9fa;
             border-top: 1px solid #dee2e6;
         }
+
+        /* Responsive Font Size & Layout */
+@media (max-width: 767.98px) {
+    /* Judul kartu (h6) */
+    .stat-card .h6 {
+        font-size: 0.95rem !important;
+        font-weight: 600;
+    }
+
+    /* Angka besar (h3) */
+    .stat-card .h3 {
+        font-size: 1.8rem !important; /* Lebih besar di mobile */
+        font-weight: 700;
+    }
+
+    /* Ikon ikon */
+    .stat-card .col-auto i {
+        font-size: 2.5rem !important;
+    }
+
+    /* Selamat datang */
+    .welcome-card h2 {
+        font-size: 1.4rem !important;
+    }
+    .welcome-card p {
+        font-size: 0.9rem !important;
+    }
+
+    /* Tombol aksi cepat */
+    .btn-icon-split span.text {
+        font-size: 0.95rem !important;
+    }
+
+    /* Padding card lebih besar */
+    .stat-card .card-body {
+        padding: 1.5rem !important;
+    }
+
+    /* Tabel header */
+    .table thead th {
+        font-size: 0.85rem;
+    }
+
+    /* Tabel isi */
+    .table tbody td {
+        font-size: 0.9rem;
+    }
+
+    /* Aksi cepat tombol */
+    .btn-warning {
+        font-size: 0.9rem;
+    }
+}
     </style>
 
     <div class="container-fluid">

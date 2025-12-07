@@ -22,11 +22,20 @@ class FinancialReportController extends Controller
      */
     public function index()
 {
-    // Hitung total dan saldo
+    // Hitung total dan saldo dengan benar
     $incomeFromTransactions = Transaksi::where('status', 'Lunas')->sum('total');
     $manualIncome = FinancialReport::where('type', 'income')->where('source', 'manual')->sum('amount');
+    
+    // PERBAIKAN: Hitung adjustment dari retur (field income)
+    $incomeAdjustments = FinancialReport::sum('income');
+    
+    // Total income yang benar
+    $totalIncome = $incomeFromTransactions + $manualIncome + $incomeAdjustments;
+    
+    // Total expense (hanya amount dengan type expense)
     $totalExpense = FinancialReport::where('type', 'expense')->sum('amount');
-    $totalIncome = $incomeFromTransactions + $manualIncome;
+    
+    // Balance yang benar
     $balance = $totalIncome - $totalExpense;
 
     // Data pemasukan manual
@@ -46,20 +55,30 @@ class FinancialReportController extends Controller
         ->orderBy('report_date', 'desc')
         ->paginate(5, ['*'], 'transaction_page');
 
-    // Data pengeluaran
-    $expenses = FinancialReport::where('type', 'expense')
+    // Data pengeluaran dari RETUR (uang kembali + disetujui)
+    $expensesFromRetur = FinancialReport::where('type', 'expense')
+        ->where('source', 'uang_kembali')
+        ->with('retur') // <-- kita akan buat relasi ini di model
         ->orderBy('report_date', 'desc')
-        ->paginate(5, ['*'], 'expense_page');
+        ->paginate(5, ['*'], 'expense_retur_page');
+
+    // Data pengeluaran manual
+    $manualExpenses = FinancialReport::where('type', 'expense')
+        ->where('source', 'manual')
+        ->orderBy('report_date', 'desc')
+        ->paginate(5, ['*'], 'expense_manual_page');
 
     return view('financial_reports.index', compact(
         'manualIncomes',
         'transactionIncomes',
-        'expenses',
+        'expensesFromRetur',
+        'manualExpenses',
         'totalIncome',
         'totalExpense',
         'balance',
         'incomeFromTransactions',
-        'manualIncome'
+        'manualIncome',
+        'incomeAdjustments' // Tambahkan ini untuk debugging
     ));
 }
     /**
@@ -135,42 +154,48 @@ class FinancialReportController extends Controller
 
 
     
-
     public function print()
-    {
-        // Ambil SEMUA data tanpa pagination
-        $transactionIncomes = Transaksi::selectRaw('DATE(tanggal) as report_date')
-            ->selectRaw('SUM(total) as amount')
-            ->selectRaw('COUNT(*) as total_items')
-            ->selectRaw('GROUP_CONCAT(DISTINCT nama_pelanggan SEPARATOR ", ") as cashiers')
-            ->join('users', 'transaksi.user_id', '=', 'users.id')
-            ->groupBy('report_date')
-            ->orderBy('report_date', 'desc')
-            ->get();
+{
+    // Ambil SEMUA data tanpa pagination
+    $transactionIncomes = Transaksi::selectRaw('DATE(tanggal) as report_date')
+        ->selectRaw('SUM(total) as amount')
+        ->selectRaw('COUNT(*) as total_items')
+        ->selectRaw('GROUP_CONCAT(DISTINCT nama_pelanggan SEPARATOR ", ") as cashiers')
+        ->join('users', 'transaksi.user_id', '=', 'users.id')
+        ->groupBy('report_date')
+        ->orderBy('report_date', 'desc')
+        ->get();
 
-        $manualIncomes = FinancialReport::where('type', 'income')
-            ->with('user')
-            ->orderBy('report_date', 'desc')
-            ->get(); // Semua data, tanpa paginate
+    $manualIncomes = FinancialReport::where('type', 'income')
+        ->with('user')
+        ->orderBy('report_date', 'desc')
+        ->get();
 
-        $expenses = FinancialReport::where('type', 'expense')
-            ->with('user')
-            ->orderBy('report_date', 'desc')
-            ->get(); // Semua data
+    $expenses = FinancialReport::where('type', 'expense')
+        ->with('user')
+        ->orderBy('report_date', 'desc')
+        ->get();
+    
+    // PERBAIKAN: Hitung income adjustments
+    $incomeAdjustments = FinancialReport::sum('income');
+    
+    // Total income yang benar
+    $totalIncome = $transactionIncomes->sum('amount') + $manualIncomes->sum('amount') + $incomeAdjustments;
+    
+    $totalExpense = $expenses->sum('amount');
+    $balance = $totalIncome - $totalExpense;
 
-        $totalIncome = $transactionIncomes->sum('amount') + $manualIncomes->sum('amount');
-        $totalExpense = $expenses->sum('amount');
-        $balance = $totalIncome - $totalExpense;
-
-        return view('financial_reports.print', compact(
-            'transactionIncomes',
-            'manualIncomes',
-            'expenses',
-            'totalIncome',
-            'totalExpense',
-            'balance'
-        ));
-    }
+    return view('financial_reports.print', compact(
+        'transactionIncomes',
+        'manualIncomes',
+        'expenses',
+        'totalIncome',
+        'totalExpense',
+        'balance',
+        'incomeAdjustments'
+    ));
+}
+    
 
 
     public function showTransactionsByDate(Request $request)
@@ -202,4 +227,5 @@ class FinancialReportController extends Controller
         return redirect()->route('financial-reports.index')
             ->with('success', 'Laporan berhasil dihapus');
     }
+
 }

@@ -1,6 +1,6 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4 fixed-top">
     <a href="{{ route('dashboard') }}" class="brand-link">
-        <span class="brand-text font-weight-light">POS UMKM</span>
+        <span class="brand-text font-weight-light">TOKO PAK B</span>
     </a>
 
     <div class="sidebar">
@@ -57,6 +57,7 @@
                         </a>
                     </li>
 
+
                     <!-- Manajemen User Dropdown Menu -->
                     <li class="nav-item has-treeview">
                         <a href="#" class="nav-link">
@@ -91,6 +92,15 @@
                             <p>Transaksi</p>
                         </a>
                     </li>
+
+
+                    <li class="nav-item">
+                        <a href="{{ route('retur.index') }}" class="nav-link">
+                            <i class="nav-icon fas fa-undo"></i>
+                            <p>Retur</p>
+                        </a>
+                    </li>
+                    
                 @endif
             </ul>
         </nav>

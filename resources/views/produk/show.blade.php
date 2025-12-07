@@ -1,15 +1,7 @@
 @extends('layouts.adminlte')
 
 @section('content')
-    <section class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>Detail Produk {{ $produk->id }}</h1>
-                </div>
-            </div>
-        </div>
-    </section>
+    
 
     <section class="content">
         <div class="container-fluid">
@@ -54,6 +46,10 @@
                                                     <th>Kategori</th>
                                                     <td>{{ $produk->kategori->nama_kategori ?? 'Tidak ada kategori' }}</td>
                                                 </tr>
+                                                <tr>
+                                                    <th>Update Terakhir</th>
+                                                    <td>{{ $produk->updated_at->format('d M Y') }}</td>
+                                                </tr>
                                             </table>
                                         </div>
                                     </div>
@@ -84,8 +80,7 @@
                         </div>
                         <div class="card-footer">
                             <small class="text-muted">
-                                Dibuat pada: {{ $produk->created_at->format('d M Y') }} | 
-                                Terakhir diupdate: {{ $produk->updated_at->format('d M Y') }}
+                                Dibuat pada: {{ $produk->created_at->format('d M Y') }}
                             </small>
                         </div>
                     </div>

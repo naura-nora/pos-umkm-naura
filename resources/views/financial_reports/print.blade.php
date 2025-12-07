@@ -194,7 +194,7 @@
     <!-- Header Laporan -->
     <div class="header">
         <h1>LAPORAN KEUANGAN</h1>
-        <p><strong>POS UMKM</strong></p>
+        <p><strong>TOKO PAK B</strong></p>
         <p>Tanggal Cetak: {{ now()->format('d M Y H:i') }}</p>
     </div>
 
@@ -310,7 +310,7 @@
     <!-- Footer -->
     <div class="footer">
         Laporan ini dicetak secara otomatis melalui sistem. <br>
-        &copy; {{ now()->year }} POS UMKM. Hak Cipta Dilindungi.
+        &copy; {{ now()->year }} TOKO PAK B. Hak Cipta Dilindungi.
     </div>
 
 </div>

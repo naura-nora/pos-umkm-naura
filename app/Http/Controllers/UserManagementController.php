@@ -34,28 +34,54 @@ class UserManagementController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
+{
+    $request->validate([
         'name' => 'required|string|max:255',
         'email' => 'required|string|email|max:255|unique:users',
-        'password' => 'required|string|min:8|',
-        'role' => 'sometimes|exists:roles,name' // Ubah required menjadi sometimes
+        'password' => 'required|string|min:8',
+        'role' => 'sometimes|exists:roles,name'
     ]);
 
-    $user = User::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'password' => Hash::make($request->password),
-    ]);
+    // Ambil semua input, kecuali _token dan role (karena role diproses terpisah)
+    $userData = $request->except(['_token', 'role']);
 
-    // Jika role tidak dipilih, assign role pelanggan
+    // Hash password
+    $userData['password'] = Hash::make($userData['password']);
+
+    // Tentukan role (default: pelanggan)
     $role = $request->role ?? 'pelanggan';
+
+    // Jika role = pelanggan → generate kode_pelanggan
+    if ($role === 'pelanggan') {
+        $tahun = date('y'); // Ambil 2 digit tahun terakhir, misal: 25
+
+        // Cari kode pelanggan terakhir tahun ini
+        $lastPelanggan = User::where('kode_pelanggan', 'like', "CS{$tahun}%")
+            ->orderBy('kode_pelanggan', 'desc')
+            ->first();
+
+        $sequence = 1;
+        if ($lastPelanggan) {
+            // Ambil 4 digit terakhir dari kode_pelanggan
+            $lastSequence = (int) substr($lastPelanggan->kode_pelanggan, -4);
+            $sequence = $lastSequence + 1;
+        }
+
+        // Format: CS250001, CS250002, dst
+        $kodePelanggan = 'CS' . $tahun . str_pad($sequence, 4, '0', STR_PAD_LEFT);
+
+        // Tambahkan ke data user
+        $userData['kode_pelanggan'] = $kodePelanggan;
+    }
+
+    // Simpan user
+    $user = User::create($userData);
+
+    // Assign role
     $user->assignRole($role);
 
-    
-
     return redirect()->route('user-management.index')->with('success', 'User berhasil dibuat!');
-    }
+}
 
     public function show($id)
     {

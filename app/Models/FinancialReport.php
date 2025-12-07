@@ -18,8 +18,10 @@ class FinancialReport extends Model
         'amount',
         'user_id',
         'transaksi_id',
+        'retur_id',
         'source',
-        'responsible'
+        'responsible',
+        'income',
     ];
 
     protected $dates = ['report_date']; // Untuk otomatis parse ke Carbon
@@ -33,4 +35,9 @@ class FinancialReport extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function retur()
+{
+    return $this->belongsTo(Retur::class);
+}
 }

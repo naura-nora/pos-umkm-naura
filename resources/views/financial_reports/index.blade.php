@@ -166,10 +166,10 @@
             </div>
 
 
-            <!-- Tabel Pengeluaran -->
-            <div class="card">
-                <div class="card-header text-bold text-white" style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);>
-                    <h5 class="mb-0"><i class="fas fa-receipt mr-2"></i>Pengeluaran</h5>
+            <!-- Tabel Pengeluaran dari Retur -->
+            <div class="card mb-4">
+                <div class="card-header text-bold text-white" style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);">
+                    <h5 class="mb-0"><i class="fas fa-undo-alt mr-2"></i>Pengeluaran dari Retur</h5>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
@@ -185,14 +185,64 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($expenses as $index => $expense)
+                                @forelse($expensesFromRetur as $index => $expense)
                                 <tr>
-                                    <td>{{ $expenses->firstItem() + $index }}</td>
+                                    <td>{{ $expensesFromRetur->firstItem() + $index }}</td>
                                     <td>{{ $expense->description }}</td>
                                     <td>{{ $expense->report_date->format('d/m/Y') }}</td>
                                     <td>Rp {{ number_format($expense->amount, 0, ',', '.') }}</td>
                                     <td>{{ $expense->user->name }}</td>
-                                    <!-- <td>{{ $expense->responsible }}</td> -->
+                                    <td>
+                                        <div class="d-flex gap-2">
+                                            @if($expense->retur)
+                                                <a href="{{ route('retur.show', $expense->retur->id) }}" 
+                                                class="btn btn-sm btn-info" title="Lihat Detail Retur">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="6" class="text-center">Tidak ada data pengeluaran dari retur</td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    {{ $expensesFromRetur->links() }}
+                </div>
+            </div>
+
+            <!-- Tabel Pengeluaran Lain (Manual) -->
+            <div class="card">
+                <div class="card-header text-bold text-white" style="background: #001f3f; background: linear-gradient(to right, #001f3f, #003366);">
+                    <h5 class="mb-0"><i class="fas fa-money-bill-wave mr-2"></i>Pengeluaran Lain</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th width="5%">No</th>
+                                    <th width="30%">Deskripsi</th>
+                                    <th width="15%">Tanggal</th>
+                                    <th width="15%">Jumlah</th>
+                                    <th width="25%">Penanggung Jawab</th>
+                                    <th width="10%">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($manualExpenses as $index => $expense)
+                                <tr>
+                                    <td>{{ $manualExpenses->firstItem() + $index }}</td>
+                                    <td>{{ $expense->description }}</td>
+                                    <td>{{ $expense->report_date->format('d/m/Y') }}</td>
+                                    <td>Rp {{ number_format($expense->amount, 0, ',', '.') }}</td>
+                                    <td>{{ $expense->user->name }}</td>
                                     <td>
                                         <div class="d-flex gap-2">
                                             <a href="{{ route('financial-reports.edit', $expense->id) }}" 
@@ -214,7 +264,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="6" class="text-center">Tidak ada data pengeluaran</td>
+                                    <td colspan="6" class="text-center">Tidak ada data pengeluaran manual</td>
                                 </tr>
                                 @endforelse
                             </tbody>
@@ -222,7 +272,7 @@
                     </div>
                 </div>
                 <div class="card-footer">
-                    {{ $expenses->links() }}
+                    {{ $manualExpenses->links() }}
                 </div>
             </div>
         </div>

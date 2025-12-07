@@ -28,6 +28,8 @@ class Transaksi extends Model
         'user_id',
         'kode',
         'nama_pelanggan',
+        'metode_pembayaran',
+        'nomor_telepon',
         'total',
         'bayar',
         'kembalian',
@@ -54,7 +56,7 @@ class Transaksi extends Model
                 if (!$existingReport) {
                     \App\Models\FinancialReport::create([
                         'report_date' => $transaksi->tanggal,
-                        'description' => 'Pendapatan dari transaksi #' . $transaksi->kode,
+                        'description' => 'Pendapatan dari transaksi ' . $transaksi->kode,
                         'type' => 'income',
                         'amount' => $transaksi->total,
                         'user_id' => $transaksi->user_id,
@@ -82,6 +84,11 @@ class Transaksi extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function pelanggan()
+{
+    return $this->belongsTo(User::class, 'pelanggan_id');
+}   
 
 
     public function getActivitylogOptions(): LogOptions

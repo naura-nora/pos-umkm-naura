@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Transaksi;
 use App\Models\DetailTransaksi;
 use App\Models\Produk;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -46,7 +47,15 @@ class TransaksiController extends Controller
             ->where('stok_produk', '>', 0)
             ->get();
 
-        return view('transaksi.create', compact('produks'));
+        // Ambil data pelanggan
+        $pelanggans = User::whereHas('roles', function($query) {
+                $query->where('name', 'pelanggan');
+            })
+            ->whereNotNull('kode_pelanggan') // ← TAMBAHKAN INI
+            ->orderBy('name')
+            ->get(['id', 'name', 'kode_pelanggan']); // Ambil id dan name saja
+
+        return view('transaksi.create', compact('produks', 'pelanggans'));
     }
 
     public function store(Request $request)
@@ -57,6 +66,8 @@ class TransaksiController extends Controller
         'nama_pelanggan' => 'required|string|max:255',
         'tanggal' => 'required|date',
         'bayar' => 'required|numeric|min:0',
+        'metode_pembayaran' => 'required|in:cash,qris,debit',
+        'nomor_telepon' => 'required_if:metode_pembayaran,qris|nullable|numeric|digits_between:10,13',
         'produk' => 'required|array|min:1',
         'produk.*.id' => 'required|exists:produk,id',
         'produk.*.qty' => 'required|integer|min:1',
@@ -64,12 +75,28 @@ class TransaksiController extends Controller
         'total_harga' => 'required|numeric|min:0'
     ]);
 
+    // Validasi nomor telepon untuk QRIS dan Debit
+    if (in_array($request->metode_pembayaran, ['qris', 'debit']) && empty($request->nomor_telepon)) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Nomor telepon wajib diisi untuk pembayaran ' . strtoupper($request->metode_pembayaran)
+        ], 422);
+    }
+
     DB::beginTransaction();
 
     try {
         $total = $request->total_harga;
         $bayar = $request->bayar;
-        $kembalian = max(0, $bayar - $total);
+        
+        // Untuk QRIS dan Debit, pastikan bayar = total dan kembalian = 0
+        if (in_array($request->metode_pembayaran, ['qris', 'debit'])) {
+            $bayar = $total;
+            $kembalian = 0;
+        } else {
+            // Untuk Cash, hitung kembalian normal
+            $kembalian = max(0, $bayar - $total);
+        }
         
         // Tentukan status berdasarkan pembayaran
         $status = $bayar >= $total ? 'Lunas' : 'Belum Lunas';
@@ -82,16 +109,40 @@ class TransaksiController extends Controller
             }
         }
 
+        // Buat kode transaksi sequential
+        $tanggalHariIni = date('Ymd');
+        $lastTransaksi = Transaksi::where('kode', 'like', 'TRX-' . $tanggalHariIni . '%')
+            ->orderBy('kode', 'desc')
+            ->first();
+
+        $sequenceNumber = 1;
+        if ($lastTransaksi) {
+            // Extract sequence number dari kode terakhir
+            $lastSequence = (int) substr($lastTransaksi->kode, -4);
+            $sequenceNumber = $lastSequence + 1;
+        }
+
+        $kodeTransaksi = 'TRX-' . $tanggalHariIni . str_pad($sequenceNumber, 4, '0', STR_PAD_LEFT);
+        // Cari user pelanggan berdasarkan nama
+        $pelanggan = User::where('name', $request->nama_pelanggan)
+            ->whereHas('roles', function($query) {
+                $query->where('name', 'pelanggan');
+            })
+            ->first();
+
         // Buat transaksi
         $transaksi = Transaksi::create([
             'user_id' => Auth::id(),
-            'kode' => 'TRX-' . date('YmdHis') . rand(100, 999),
+            'pelanggan_id' => $pelanggan ? $pelanggan->id : null,
+            'kode' => $kodeTransaksi,
             'nama_pelanggan' => $request->nama_pelanggan,
             'total' => $total,
             'bayar' => $bayar,
             'kembalian' => $kembalian,
             'tanggal' => $request->tanggal,
-            'status' => $status // Gunakan status yang sudah ditentukan
+            'status' => $status,
+            'metode_pembayaran' => $request->metode_pembayaran,
+            'nomor_telepon' => $request->nomor_telepon
         ]);
 
         // Simpan detail & kurangi stok
@@ -109,8 +160,8 @@ class TransaksiController extends Controller
         DB::commit();
 
         return redirect()
-        ->route('transaksi.index')
-        ->with('success', 'Transaksi berhasil disimpan.');
+            ->route('transaksi.index')
+            ->with('success', 'Transaksi berhasil disimpan.');
 
     } catch (\Exception $e) {
         DB::rollBack();
@@ -121,11 +172,30 @@ class TransaksiController extends Controller
     }
 }
 
+    // public function show(Transaksi $transaksi)
+    // {
+    //     if (auth()->user()->hasRole('admin') || $transaksi->user_id === auth()->id()) {
+    //         $transaksi->load(['user', 'detailTransaksi.produk.kategori']);
+    //         return view('transaksi.show', compact('transaksi'));
+    //     }
+
+    //     abort(403, 'Anda tidak memiliki izin untuk melihat transaksi ini.');
+    // }
+
     public function show(Transaksi $transaksi)
     {
         if (auth()->user()->hasRole('admin') || $transaksi->user_id === auth()->id()) {
+            // Load relasi dasar
             $transaksi->load(['user', 'detailTransaksi.produk.kategori']);
-            return view('transaksi.show', compact('transaksi'));
+
+            // Cari user pelanggan berdasarkan nama_pelanggan
+            $pelanggan = User::where('name', $transaksi->nama_pelanggan)
+                ->whereHas('roles', function($query) {
+                    $query->where('name', 'pelanggan');
+                })
+                ->first();
+
+            return view('transaksi.show', compact('transaksi', 'pelanggan'));
         }
 
         abort(403, 'Anda tidak memiliki izin untuk melihat transaksi ini.');

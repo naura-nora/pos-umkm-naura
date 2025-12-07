@@ -10,6 +10,7 @@ use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FinancialReportController;
+use App\Http\Controllers\ReturController;
 
 // Redirect root ke login
 Route::redirect('/', '/login')->name('home');
@@ -57,6 +58,7 @@ Route::controller(AuthController::class)->group(function () {
             Route::get('/{transaksi}', [TransaksiController::class, 'show'])->name('transaksi.show');
             Route::get('/{transaksi}/edit', [TransaksiController::class, 'edit'])->name('transaksi.edit');
             Route::put('/{transaksi}', [TransaksiController::class, 'update'])->name('transaksi.update');
+            Route::get('/transaksi/get-pelanggan', [TransaksiController::class, 'getPelanggan'])->name('transaksi.get-pelanggan');
         });
         
         // Hanya admin yang bisa hapus transaksi
@@ -131,4 +133,53 @@ Route::controller(AuthController::class)->group(function () {
 Route::fallback(function () {
     return redirect()->route(auth()->check() ? 'dashboard' : 'login')
            ->with('error', 'Halaman tidak ditemukan');
+});
+
+// // Retur Barang
+Route::get('/transaksi/{id}/produk', function ($id) {
+    $transaksi = \App\Models\Transaksi::findOrFail($id);
+    return $transaksi->detailTransaksi->map(function ($detail) {
+        return [
+            'produk_id' => $detail->produk_id,
+            'produk' => [
+                'nama_produk' => $detail->produk->nama_produk,
+            ],
+            'qty' => $detail->qty,
+        ];
+    });
+});
+
+
+// API untuk retur
+Route::get('/api/transaksi/{id}/produk', function ($id) {
+    $transaksi = \App\Models\Transaksi::findOrFail($id);
+    return $transaksi->detailTransaksi->map(function ($detail) {
+        return [
+            'produk_id' => $detail->produk_id,
+            'produk' => [
+                'nama_produk' => $detail->produk->nama_produk,
+            ],
+            'qty' => $detail->qty,
+        ];
+    });
+})->name('api.transaksi.produk');
+
+
+Route::get('/retur/get-produk/{transaksiId}', [ReturController::class, 'getProduk'])
+    ->name('retur.get-produk')
+    ->middleware(['auth', 'role:admin,kasir']);
+
+Route::middleware(['auth', 'role:admin,kasir'])->group(function () {
+    Route::get('/retur', [ReturController::class, 'index'])->name('retur.index');
+    Route::get('/retur/create', [ReturController::class, 'create'])->name('retur.create');
+    Route::post('/retur', [ReturController::class, 'store'])->name('retur.store');
+    Route::get('/retur/{retur}/edit', [ReturController::class, 'edit'])->name('retur.edit');
+    Route::put('/retur/{retur}', [ReturController::class, 'update'])->name('retur.update');
+    Route::get('/retur/{retur}', [ReturController::class, 'show'])->name('retur.show');
+    Route::delete('/retur/{retur}', [ReturController::class, 'destroy'])->name('retur.destroy');
+});
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::post('/retur/{retur}/approve', [ReturController::class, 'approve'])->name('retur.approve');
+    Route::post('/retur/{retur}/reject', [ReturController::class, 'reject'])->name('retur.reject');
 });

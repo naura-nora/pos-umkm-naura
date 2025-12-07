@@ -24,7 +24,7 @@
     </div>
 
     <footer class="main-footer text-center">
-        <strong>POS UMKM © 2025</strong>
+        <strong>TOKO PAK B © 2025</strong>
     </footer>
 </div>
 

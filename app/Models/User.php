@@ -20,7 +20,8 @@ class User extends Authenticatable
         'phone',
         'address',
         'photo',
-        'role'
+        'role',
+        'kode_pelanggan',
         // Hapus 'role' karena akan menggunakan sistem role Spatie
     ];
 
